@@ -20,8 +20,16 @@
   },
   "homepage": "https://github.com/yoolook/api_lookmate#readme",
   "dependencies": {
+    "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
+    "config": "^3.1.0",
     "cookie-parser": "^1.4.4",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "google-auth-library": "^4.2.5",
+    "joi": "^14.3.1",
+    "jsonwebtoken": "^8.5.1",
+    "morgan": "^1.9.1",
+    "mysql2": "^1.6.5",
+    "sequelize": "^5.9.3"
   }
 }
