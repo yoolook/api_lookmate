@@ -11,5 +11,5 @@ module.exports = function (app) {
     //google related URL's.
     app.route('/auth/google/').get(googleAuthorization.verify);
     //google related URL's.
-    app.route('/auth/otp/').get(verifyAuthToken,checkOTP.verifyOTP);
+    app.route('/auth/otp/').post(verifyAuthToken,checkOTP.verifyOTP);
 };

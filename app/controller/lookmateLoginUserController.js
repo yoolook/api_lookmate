@@ -18,7 +18,7 @@ exports.login = async function (req, res) {
         console.log("login api results: " + JSON.stringify(result));    
         if (result) {
                 if (bcrypt.compareSync(req.body.password, result.password)) {
-                    res.header("x-auth-token", User.generateAuthToken()).send({
+                    res.header("x-access-token", User.generateAuthToken()).send({
                         "code": 200,
                         "success": "login sucessfull",
                         "user": result.nick_name,
