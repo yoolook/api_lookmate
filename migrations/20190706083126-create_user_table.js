@@ -18,7 +18,7 @@ module.exports = {
       },
       nick_name: {
         type: Sequelize.STRING(25),
-        allowNull: false,
+        allowNull: true,
         unique: true
       },
       email: {
@@ -31,6 +31,18 @@ module.exports = {
       },
       phone: {
         type: Sequelize.INTEGER(20),
+        allowNull: true
+      },
+      otp: {
+        type: Sequelize.INTEGER(8),
+        allowNull: true
+      },
+      verified:{
+        type: Sequelize.BOOLEAN,
+        allowNull: false
+      },
+      birth_year_range:{
+        type: Sequelize.INTEGER(8),
         allowNull: true
       },
       lastProfilePicId: {

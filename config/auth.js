@@ -21,7 +21,8 @@ module.exports = {
         'callbackURL'   : 'http://localhost:3000/auth/google/'
     },
     'secret_codes' : {
-        'jwt_secret_key': 'lookmatelock'
+        'jwt_secret_key': 'lookmatelock',
+        'otp_secret_key': 'lookmateOTP'
     }
 
 

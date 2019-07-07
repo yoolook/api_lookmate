@@ -16,20 +16,6 @@ app.use(bodyParser.json({ type: 'application/vnd.api+json' }))
  
 var routes = require('./app/routes/base-route'); //importing route
 
-/* app.use(function(req,res,next){
-    var token=req.body.token || req.headers['token'];
-    if(token){
-        jwt.verify(token,process.env.SECRET_KEY,function(err,ress){
-            if(err){
-                res.status(500).send('Token Invalid');
-            }else{
-                next();
-            }
-        })
-    }else{
-        res.send('Please send a token')
-    }
-}); */
 
 routes(app); //register the route  */
 

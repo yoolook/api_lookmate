@@ -1,6 +1,7 @@
 var User = require('../models/User');
 const bcrypt = require('bcryptjs');
-
+const otplib =require('otplib');
+var authKeys = require('../../config/auth');
 //Operations object constructor
 /* var Operation = function (operation) {
     this.nick_name = operation.nick_name;
@@ -11,11 +12,12 @@ const bcrypt = require('bcryptjs');
 }; */
 //new register policies:
 //1. Nick name would be user until someone sets it from welcome page or setting.
-exports.register = function (req, res) {
+exports.register = function (req, res) { 
     User.create({
-        nick_name:"user",
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password),
+        otp:otplib.authenticator.generate(authKeys.secret_codes.otp_secret_key),
+        verified:req.body.verified==undefined ? false:req.body.verified,
         createdAt: sequelize.fn('NOW'),
         updatedAt: sequelize.fn('NOW')
     }).then(users => {
@@ -24,8 +26,9 @@ exports.register = function (req, res) {
             res.header("x-auth-token", User.generateAuthToken()).send({
                 "code": 200,
                 "success": "user registered sucessfully",
-                "user": users.nick_name,
+                "user": users.nick_name? "user":users.nick_name,
                 "email": users.email,
+                "verified":users.verified,
                 "new_user":true
             });
         } else {

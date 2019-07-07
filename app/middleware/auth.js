@@ -4,6 +4,7 @@ var authKeys = require('../../config/auth');
 1. Token should be attached in the form of ["x-access-token"] in header of all the requests. 
 2.*/
 module.exports = function(req, res, next) {
+  console.log("processing token verification...");
   //get the token from the header if present
   const token = req.headers["x-access-token"] || req.headers["authorization"];
   //if no token found, return response (without going to the next middelware)
