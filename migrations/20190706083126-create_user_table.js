@@ -23,15 +23,17 @@ module.exports = {
       },
       email: {
         type: Sequelize.STRING(25),
-        allowNull: false
+        allowNull: true,
+        unique: true
       },
       password: {
         type: Sequelize.STRING(100),
         allowNull: true
       },
       phone: {
-        type: Sequelize.INTEGER(20),
-        allowNull: true
+        type: Sequelize.BIGINT,
+        allowNull: true,
+        unique: true
       },
       otp: {
         type: Sequelize.INTEGER(8),

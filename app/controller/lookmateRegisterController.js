@@ -2,6 +2,7 @@ var User = require('../models/User');
 const bcrypt = require('bcryptjs');
 const otplib =require('otplib');
 var authKeys = require('../../config/auth');
+const { validationResult } = require('express-validator');
 //Operations object constructor
 /* var Operation = function (operation) {
     this.nick_name = operation.nick_name;
@@ -13,11 +14,16 @@ var authKeys = require('../../config/auth');
 //new register policies:
 //1. Nick name would be user until someone sets it from welcome page or setting.
 exports.register = function (req, res) { 
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
     User.create({
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password),
         otp:otplib.authenticator.generate(authKeys.secret_codes.otp_secret_key),
         verified:req.body.verified==undefined ? false:req.body.verified,
+        phone:req.body.phone,
         createdAt: sequelize.fn('NOW'),
         updatedAt: sequelize.fn('NOW')
     }).then(users => {
@@ -28,11 +34,12 @@ exports.register = function (req, res) {
                 "success": "user registered sucessfully",
                 "user": users.nick_name? "user":users.nick_name,
                 "email": users.email,
+                "phone":users.phone,
                 "verified":users.verified,
                 "new_user":true
             });
         } else {
-            res.status(400).send('Error in insert new record');
+            res.status(400).send("Error in registration");
         }
     }).catch(error => {
         res.send({

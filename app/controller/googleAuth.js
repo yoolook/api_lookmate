@@ -29,7 +29,8 @@ exports.verify = function (req, res) {
                 {
                     email: payload.email,
                     password: payload.email,
-                    verified:payload.email_verified
+                    verified:payload.email_verified,
+                    phone:null
                 }
             }
             //create user and send back the response with jwt auth key and new user true, get user to create nick name.
