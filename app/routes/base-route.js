@@ -1,5 +1,6 @@
 const verifyAuthToken= require('../middleware/auth');
 const { check} = require('express-validator');
+var io        =     require("socket.io");
 //check is used for getting the error: to set errors on response, validation is used in controller.
 
 module.exports = function (app) {
@@ -16,4 +17,6 @@ module.exports = function (app) {
     app.route('/auth/google/').get(googleAuthorization.verify);
     //google related URL's.
     app.route('/auth/otp/').post(verifyAuthToken,checkOTP.verifyOTP);
+
+    
 };
