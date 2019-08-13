@@ -1,7 +1,7 @@
 var User = require('../models/User');
 // Alternatively: const secret = otplib.authenticator.generateSecret();
 exports.verifyOTP = async function(req,res){
-    await User.findOne({ where: { email: req.body.email } }).then(
+    await User.findOne({ where: { email: req.body.email} }).then(
          (user) => {
             if(req.body.otp == user.otp){
                 user.update({
