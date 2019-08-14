@@ -23,7 +23,8 @@ exports.login = async function (req, res) {
                         "success": "login sucessfull",
                         "user": result.nick_name,
                         "email": result.email,
-                        "new_user":false
+                        "new_user":false,
+                        "first_time_user":result.first_time_user
                     });
                 }
                 else {

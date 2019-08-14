@@ -25,7 +25,8 @@ exports.register = function (req, res) {
         verified:req.body.verified==undefined ? false:req.body.verified,
         phone:req.body.phone,
         createdAt: sequelize.fn('NOW'),
-        updatedAt: sequelize.fn('NOW')
+        updatedAt: sequelize.fn('NOW'),
+        first_time_user:true
     }).then(users => {
         if (users) {
             //res.send(users);
@@ -36,7 +37,7 @@ exports.register = function (req, res) {
                 "email": users.email,
                 "phone":users.phone,
                 "verified":users.verified,
-                "new_user":true
+                "first_time_user":true
             });
         } else {
             res.status(400).send("Error in registration");

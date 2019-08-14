@@ -44,6 +44,14 @@ const User = sequelize.define("users", {
   lastProfilePicId: {
     type: Sequelize.INTEGER(5),
     allowNull: true
+  },
+  gender: {
+    type: Sequelize.CHAR(1),
+    allowNull: true
+  },
+  first_time_user:{
+    type: Sequelize.BOOLEAN,
+    allowNull: false
   }
 });
 
