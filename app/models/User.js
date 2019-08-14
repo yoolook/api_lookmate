@@ -65,6 +65,5 @@ User.generateAuthToken = function () {
   return accessToken;
 }
 
-
 module.exports = User;
 

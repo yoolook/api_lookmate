@@ -33,6 +33,7 @@
     "mysql2": "^1.6.5",
     "otplib": "^11.0.1",
     "sequelize": "^5.9.3",
+    "socket.io": "^2.2.0",
     "validator": "^11.1.0"
   }
 }
