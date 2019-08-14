@@ -1,4 +1,5 @@
 const { verifyAuthToken, verifyAuthSocketToken } = require('../middleware/auth');
+var socketJwtAuth = require('socketio-jwt-auth');
 /* verifyAuthSocketToken:used for authentication of socket data. */
 const { check } = require('express-validator');
 
@@ -36,9 +37,7 @@ module.exports = function (app, io) {
             io.emit('error in authorization');
             //todo: disconnect token here
         }
-    })).on('connection', function (socket) {
-        console.log("made a socket connection", socket.id);
-        socket.on('addAppearance', function (data) {
+    })).on('addAppearance', function (data) {
             makeAppearance.addAppearance(data, function (res) {
                 if (res) {
                     io.emit('refreshAppearance', res);
@@ -48,5 +47,10 @@ module.exports = function (app, io) {
             });
             //io.sockets.emit('event',"that's what you sent:" + data);
         });
-    });
 };
+
+
+//Important debrise from working model.
+/* ....on('connection', function (socket) {
+    console.log("made a socket connection", socket.id);
+    socketon('addAppearance',... */
