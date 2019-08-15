@@ -56,10 +56,11 @@ const User = sequelize.define("users", {
 });
 
 
-User.generateAuthToken = function () {
+User.generateAuthToken = function (user_info) {
   //const accesstoken = jwt.sign({ id: this.nick_name }, SECRET_KEY); //get the private key from the config file -> environment variable
   const expiresIn = 24 * 60 * 60;
-  const accessToken = jwt.sign({ id: this.nick_name }, authKeys.secret_codes.jwt_secret_key, {
+  console.log("\nGenerated Token For: " + JSON.stringify(user_info));
+  const accessToken = jwt.sign({ user_info}, authKeys.secret_codes.jwt_secret_key, {
     expiresIn: expiresIn
   });
   return accessToken;

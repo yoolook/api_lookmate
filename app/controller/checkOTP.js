@@ -17,7 +17,7 @@ exports.verifyOTP = async function (req, res) {
                 user.update({
                     verified: true
                 }).then(users => {
-                    res.header("x-access-token", User.generateAuthToken()).send({
+                    res.header("x-access-token", User.generateAuthToken(users)).send({
                         "code": 200,
                         "verified": users.verified
                     });

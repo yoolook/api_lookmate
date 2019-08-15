@@ -11,7 +11,7 @@ exports.verify = function (req, res) {
         let user = await User.findOne({ where: { email: payload.email } });
         if (user) {
             //login and send back the response with jwt auth key.
-            res.header("x-auth-token", User.generateAuthToken()).send({
+            res.header("x-auth-token", User.generateAuthToken(user)).send({
                 "code": 200,
                 "success": "login sucessfull",
                 "user": user.nick_name,

@@ -30,7 +30,7 @@ exports.register = function (req, res) {
     }).then(users => {
         if (users) {
             //res.send(users);
-            res.header("x-access-token", User.generateAuthToken()).send({
+            res.header("x-access-token", User.generateAuthToken(users)).send({
                 "code": 200,
                 "success": "user registered sucessfully",
                 "user": users.nick_name? "user":users.nick_name,

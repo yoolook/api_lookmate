@@ -3,7 +3,7 @@ var authKeys = require('../../config/auth');
 /* Token Policies
 1. Token should be attached in the form of ["x-access-token"] in header of all the requests. 
 2.*/
-exports.verifyAuthToken = function(req, res, next) {
+exports.verifyAuthToken = function (req, res, next) {
   //get the token from the header if present
   const token = req.headers["x-access-token"] || req.headers["authorization"];
   //if no token found, return response (without going to the next middelware)
@@ -22,18 +22,22 @@ exports.verifyAuthToken = function(req, res, next) {
   }
 };
 
-exports.verifyAuthSocketToken = function(status, callback) {
+exports.verifyAuthSocketToken = function (socket, next) {
   //policy: status.token: Should send the token to the socket.
-  const token = status.token;
-  if (!token) return callback(false);
+  const token = socket.handshake.query.token;
+  if (!token) {
+    return next(new Error('Could not find token'));
+  }
   try {
     //if can verify the token, set req.user and pass to next middleware
     const decoded = jwt.verify(token, authKeys.secret_codes.jwt_secret_key);
+    //const decoded = 1234;
+    //todo:comment above line and uncomment next to above line when real jwt is sent from client
     //todo:manage the time duration, if lapse then redirect back to user with time out status
+    socket.decoded = decoded;
     next();
   } catch (ex) {
-    //if invalid token
-    callback(false);
+    next(new Error('Could not Parse token'));
   }
-  
+
 };

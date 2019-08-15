@@ -1,17 +1,18 @@
 var Appearance = require('../models/Appearance');
-exports.addAppearance = function (status, callback) {
+exports.addAppearance = function (status,user_info,callback) {
+    //todo: compact the user_info (which is inserted while creating JWA ) from object inside object to outer object with all details.
     //create appearance in the database.
     Appearance.create({
         caption: status,
         img_url: 'url',
-        userid: 3
+        userid: user_info.user_info.user_id
     }).then(appearanceMade => {
         if (appearanceMade) {
             //res.send(users);
             callback({
                 "code": 200,
                 "success": "user appearance made",
-                "user": "username",
+                "user": user_info.user_info.user_id,
                 "new_user": false
             });
             return;

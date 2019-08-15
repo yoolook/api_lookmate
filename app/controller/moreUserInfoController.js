@@ -17,7 +17,7 @@ exports.updateMoreInfo = async function(req,res){
                     gender:req.body.gender,
                     first_time_user:false
                 }).then(users => {
-                    res.header("x-access-token", User.generateAuthToken()).send({
+                    res.header("x-access-token", User.generateAuthToken(users)).send({
                         "code": 200,
                         "verified":users.verified,
                         "first_time_user": users.first_time_user
