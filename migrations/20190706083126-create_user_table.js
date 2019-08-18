@@ -39,11 +39,11 @@ module.exports = {
         type: Sequelize.INTEGER(8),
         allowNull: true
       },
-      verified:{
+      verified: {
         type: Sequelize.BOOLEAN,
         allowNull: false
       },
-      birth_year_range:{
+      birth_year_range: {
         type: Sequelize.INTEGER(8),
         allowNull: true
       },
@@ -55,7 +55,7 @@ module.exports = {
         type: Sequelize.CHAR(1),
         allowNull: true
       },
-      first_time_user:{
+      first_time_user: {
         type: Sequelize.BOOLEAN,
         allowNull: false
       },
@@ -72,6 +72,6 @@ module.exports = {
       Example:
       return queryInterface.dropTable('users');
     */
-   return queryInterface.dropTable('users');
+    return queryInterface.dropTable('users');
   }
 };

@@ -20,6 +20,7 @@
   },
   "homepage": "https://github.com/yoolook/api_lookmate#readme",
   "dependencies": {
+    "amqplib": "^0.5.5",
     "bcryptjs": "^2.4.3",
     "body-parser": "^1.19.0",
     "config": "^3.1.0",

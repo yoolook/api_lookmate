@@ -1,8 +1,9 @@
 const { verifyAuthToken, verifyAuthSocketToken } = require('../middleware/auth');
 /* verifyAuthSocketToken:used for authentication of socket data. */
 const { check } = require('express-validator');
-
 //check is used for getting the error: to set errors on response, validation is used in controller.
+var numClients = 0;
+
 
 module.exports = function (app, io) {
     var lookmateLoginUserRoute = require('../controller/lookmateLoginUserController');
@@ -23,18 +24,39 @@ module.exports = function (app, io) {
     //register more user info into the database.
     app.route('/register/next').post(verifyAuthToken, [check('nick_name').isLength({ min: 4 }), check('birth_year_range').isLength({ min: 4 }), check('gender').isLength({ min: 1 }, { max: 1 })], lookmateMoreUserInfo.updateMoreInfo);
     //app.route('/auth/otp/').post(verifyAuthToken, checkOTP.verifyOTP);
-    //example of authentication on the socket.
-    /* todo: keep udpating the policy for the Socket URL update. 
+    //below is for Mysql update of appearance which was commented because I was trying to implement the same with rabbitmq.
+    //app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],makeAppearance.addAppearance);
+    app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],makeAppearance.addAppearanceByCloud);
+    
+    /*todo: keep udpating the policy for the Socket URL update. 
     toinitialConnect:"connection" request:[token] response[error message]
     toAddAppearance: "addAppearance" request:[]
     */
+
+   io.use(verifyAuthSocketToken);
+   io.on('connect', function (socket) {
+    console.log("Client " + numClients++ +" in connect >" + JSON.stringify(socket.decoded));
+        io.emit('refreshAppearance',"updated message");
+   });
+
+/*  //for experiment of of    
+    var iosa = io.of('/lookmate');
+    iosa.on('connection', function(socket){
+        console.log('Connected to Stack Abuse namespace');
+    });
+    iosa.emit('refreshAppearance',"test data"); */
+   
+    
+
+/* //--------very important:start (open addAppearance file as well)-------------- 
+    // this module allow user to upload appearance from socket as well, later I realized that this should be from api instead of socket, but it's completely working.
     io.use(verifyAuthSocketToken);
     io.on('connect', function (socket) {
         // Connection now authenticated to receive further events
         console.log("in connect >" + JSON.stringify(socket.decoded));
         socket.on('addAppearance', function (data) {
             console.log("Add appearance triggered");
-            makeAppearance.addAppearance(data,socket.decoded,function (res) {
+            makeAppearance.addAppearanceBySocket(data,socket.decoded,function (res) {
                 if (res) {
                     console.log("Add appearance emitted");
                     io.emit('refreshAppearance', res);
@@ -45,5 +67,10 @@ module.exports = function (app, io) {
             });
             //io.sockets.emit('event',"that's what you sent:" + data);
         });
-    })
+    }) */
+
+ 
+
+
 };
+

@@ -9,11 +9,15 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true
       },
+      picture: {
+        type: Sequelize.STRING(100),
+        allowNull: true
+      },
       caption: {
         type: Sequelize.STRING(100),
         allowNull: true
       },
-      img_url: {
+      location: {
         type: Sequelize.STRING(100),
         allowNull: true
       },
@@ -21,7 +25,9 @@ module.exports = {
         type: Sequelize.INTEGER(11),
         allowNull: false,
         primaryKey: true
-      }
+      },
+      createdAt: Sequelize.DATE,
+      updatedAt: Sequelize.DATE
     });
   },
 

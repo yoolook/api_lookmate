@@ -2,23 +2,27 @@ const jwt = require("jsonwebtoken");
 var authKeys = require('../../config/auth');
 /* Token Policies
 1. Token should be attached in the form of ["x-access-token"] in header of all the requests. 
-2.*/
+2. All User information can be attained throuigh "userDataFromToken" for later user.
+*/
 exports.verifyAuthToken = function (req, res, next) {
   //get the token from the header if present
   const token = req.headers["x-access-token"] || req.headers["authorization"];
+  console.log("decoded value in Auth:" + token);
   //if no token found, return response (without going to the next middelware)
   if (!token) return res.status(401).send("Access denied. No token provided.");
 
   try {
+
     //if can verify the token, set req.user and pass to next middleware
     const decoded = jwt.verify(token, authKeys.secret_codes.jwt_secret_key);
     //todo:manage the time duration, if lapse then redirect back to user with time out status
     //can be managed using "decode"
-    //req.user = decoded;
+    req.userDataFromToken = decoded;
+    console.log("Auth > UserDetails: " + JSON.stringify(decoded));
     next();
   } catch (ex) {
     //if invalid token
-    res.status(400).send("Invalid token.");
+    res.status(400).send("Invalid token." + ex);
   }
 };
 

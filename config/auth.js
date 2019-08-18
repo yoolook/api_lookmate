@@ -23,6 +23,9 @@ module.exports = {
     'secret_codes' : {
         'jwt_secret_key': 'lookmatelock',
         'otp_secret_key': 'lookmateOTP'
+    },
+    'rabbitmq_keys' : {
+        'connection_url':'amqp://jvtzjwfr:bQXL_TDSoMYcQBeOH92zoCCfYCfYb1-5@vulture.rmq.cloudamqp.com/jvtzjwfr'
     }
 
 
