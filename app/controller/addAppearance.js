@@ -85,7 +85,7 @@ Extract other info from token: (req.userDataFromToken)
 exports.addAppearanceByCloud = async function (req, res) {
     try {
         const payload={
-            picture: (req.body.picture).toString(),
+            picture: req.body.picture,
             caption: req.body.caption,
             location: req.body.location,
             userid: req.userDataFromToken.user_info.user_id,

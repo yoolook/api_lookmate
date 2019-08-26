@@ -24,7 +24,8 @@ var io        =     require("socket.io")(http); */
 //---end:for socket.io-----
 
 var socket = require("socket.io")
-var server = app.listen(port);
+var server = app.listen(port,"0.0.0.0");
+
 var io= socket(server);
 
 routes(app,io); //register the route  */

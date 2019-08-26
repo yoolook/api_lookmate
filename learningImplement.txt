@@ -1,0 +1,7 @@
+1. Implement concept of push notification.
+2. RabbitMQ- AMQP Implement to provide feeds on user machine.
+
+-------------------
+temporary changes
+3. change content-type or serialize and deserialize
+4. content-type = application/json

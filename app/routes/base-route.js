@@ -4,7 +4,6 @@ const { check } = require('express-validator');
 //check is used for getting the error: to set errors on response, validation is used in controller.
 var numClients = 0;
 
-
 module.exports = function (app, io) {
     var lookmateLoginUserRoute = require('../controller/lookmateLoginUserController');
     var lookmateRegisterRoute = require('../controller/lookmateRegisterController');
@@ -13,6 +12,7 @@ module.exports = function (app, io) {
     var checkOTP = require('../controller/checkOTP');
     var lookmateMoreUserInfo = require('../controller/moreUserInfoController')
     var makeAppearance = require('../controller/addAppearance');
+    var uploadImageToServer = require('../controller/uploadImage')
     //loomkmate login route
     app.route('/login').post([check('userid').isLength({ min: 4 }), check('password').isLength({ min: 5 })], lookmateLoginUserRoute.login);
     //lookmate registartion route
@@ -26,8 +26,10 @@ module.exports = function (app, io) {
     //app.route('/auth/otp/').post(verifyAuthToken, checkOTP.verifyOTP);
     //below is for Mysql update of appearance which was commented because I was trying to implement the same with rabbitmq.
     //app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],makeAppearance.addAppearance);
-    app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],makeAppearance.addAppearanceByCloud);
+    //to upload file/images to the server. //todo:check image properties as well, as of now only it should be jpeg or jpg
+    app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],uploadImageToServer.uploadImageToServer,makeAppearance.addAppearanceByCloud);
     
+
     /*todo: keep udpating the policy for the Socket URL update. 
     toinitialConnect:"connection" request:[token] response[error message]
     toAddAppearance: "addAppearance" request:[]
