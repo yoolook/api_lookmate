@@ -109,7 +109,7 @@ exports.addAppearanceByCloud = async function (req, res) {
         }
         //code here is for rabbit mq, enable if required rabbit mq.
         //await publishToQueue("IntoFeeds", payload); 
-        feed_channel.trigger('push_feed_channel', 'push_feed',{ "name":"binu"});
+        feed_channel.trigger('push_feed_channel', 'push_feed',payload);
         res.statusCode = 200;
         res.data = { "message-sent": true };
         res.send({
