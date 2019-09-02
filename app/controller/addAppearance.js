@@ -1,5 +1,17 @@
 var Appearance = require('../models/Appearance');
 const publishToQueue = require('../database/connect-rabbitMQ');
+var Pusher = require('pusher'); //use either pusher of publish to quirue
+var authKeys = require('../../config/auth');
+
+//configuration for pusher
+var feed_channel = new Pusher({
+    appId: authKeys.pusher_keys.app_id,
+    key:authKeys.pusher_keys.key,
+    secret:authKeys.pusher_keys.secret,
+    cluster: authKeys.pusher_keys.cluster,
+    encrypted: true
+  });
+
 exports.addAppearanceBySocket = function (status, user_info, callback) {
     //todo: compact the user_info (which is inserted while creating JWA ) from object inside object to outer object with all details.
     //create appearance in the database.
@@ -82,9 +94,12 @@ Extract other info from token: (req.userDataFromToken)
 2. Creation date.
 */
 
+//todo[urgent]: save this images things on database too. (open the above feature to get it saved into database.)
+
 exports.addAppearanceByCloud = async function (req, res) {
     try {
-        const payload={
+
+            const payload={
             picture: req.body.picture,
             caption: req.body.caption,
             location: req.body.location,
@@ -92,7 +107,9 @@ exports.addAppearanceByCloud = async function (req, res) {
             createdAt: sequelize.fn('NOW'),
             updatedAt: sequelize.fn('NOW'),
         }
-        await publishToQueue("IntoFeeds", payload)
+        //code here is for rabbit mq, enable if required rabbit mq.
+        //await publishToQueue("IntoFeeds", payload); 
+        feed_channel.trigger('push_feed_channel', 'push_feed',{ "name":"binu"});
         res.statusCode = 200;
         res.data = { "message-sent": true };
         res.send({

@@ -1,5 +1,6 @@
 var User = require('../models/User');
 const { validationResult } = require('express-validator');
+const Sequelize = require("sequelize");
 
 exports.updateMoreInfo = async function(req,res){
     const errors = validationResult(req);
@@ -11,9 +12,10 @@ exports.updateMoreInfo = async function(req,res){
     }).then(
          (user) => {
             if(user){
+                //todo[urgent]: make its user id get from token, and  resolve birth_year_range issue.
                 user.update({
                     nick_name:req.body.nick_name,
-                    birth_year_range:req.body.birth_year_range,
+                    birth_year_range:null,
                     gender:req.body.gender,
                     first_time_user:false
                 }).then(users => {

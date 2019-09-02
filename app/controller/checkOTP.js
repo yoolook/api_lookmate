@@ -1,5 +1,6 @@
 var User = require('../models/User');
 const { validationResult } = require('express-validator');
+const Sequelize = require("sequelize");
 
 // Alternatively: const secret = otplib.authenticator.generateSecret();
 exports.verifyOTP = async function (req, res) {

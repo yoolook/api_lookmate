@@ -26,7 +26,7 @@ module.exports = function (app, io) {
     //app.route('/auth/otp/').post(verifyAuthToken, checkOTP.verifyOTP);
     //below is for Mysql update of appearance which was commented because I was trying to implement the same with rabbitmq.
     //app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],makeAppearance.addAppearance);
-    //to upload file/images to the server. //todo:check image properties as well, as of now only it should be jpeg or jpg
+    //merged the service to upload file/images to the server. //todo:check image properties as well, as of now only it should be jpeg or jpg
     app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],uploadImageToServer.uploadImageToServer,makeAppearance.addAppearanceByCloud);
     
 
