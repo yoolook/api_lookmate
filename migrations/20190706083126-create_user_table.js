@@ -22,7 +22,7 @@ module.exports = {
         unique: true
       },
       email: {
-        type: Sequelize.STRING(25),
+        type: Sequelize.STRING(50),
         allowNull: true,
         unique: true
       },
@@ -48,7 +48,7 @@ module.exports = {
         allowNull: true
       },
       lastProfilePicId: {
-        type: Sequelize.INTEGER(5),
+        type: Sequelize.STRING(100),
         allowNull: true
       },
       gender: {

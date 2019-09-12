@@ -11,6 +11,7 @@ var LoginInfo = function (loginInfo) {
 };
 
 //todo:use the above object to get the req parameters, which are currently used directly.
+//todo:use token based searching of user instead of the email of phone number.
 
 exports.login = async function (req, res) {
     //todo:check for null entries in nick_name as it has changed to null entry.

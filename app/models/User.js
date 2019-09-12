@@ -43,7 +43,7 @@ const User = sequelize.define("users", {
     allowNull: true
   },
   lastProfilePicId: {
-    type: Sequelize.INTEGER(5),
+    type: Sequelize.STRING(100),
     allowNull: true
   },
   gender: {

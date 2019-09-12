@@ -114,7 +114,7 @@ exports.addAppearanceByCloud = async function (req, res) {
         //await publishToQueue("IntoFeeds", payload); 
         //opencomment:to push data on pusher
         //closed: just not to push anything from persi environement and updating database addition functionality.
-        //feed_channel.trigger('push_feed_channel', 'push_feed',payload);
+        feed_channel.trigger('push_feed_channel','push_feed',payload);
         res.statusCode = 200;
         res.data = { "message-sent": true };
         res.send({

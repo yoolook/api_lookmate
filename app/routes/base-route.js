@@ -8,11 +8,14 @@ module.exports = function (app, io) {
     var lookmateLoginUserRoute = require('../controller/lookmateLoginUserController');
     var lookmateRegisterRoute = require('../controller/lookmateRegisterController');
     var googleAuthorization = require('../controller/googleAuth');
-    var generalMethods = require('../controller/general.validators');
+    var generalMethods = require('../middleware/general.validators');
     var checkOTP = require('../controller/checkOTP');
     var lookmateMoreUserInfo = require('../controller/moreUserInfoController')
     var makeAppearance = require('../controller/addAppearance');
-    var uploadImageToServer = require('../controller/uploadImage')
+    var uploadImageToServer = require('../middleware/uploadImage');
+    var commentController = require('../controller/addComment');
+    var uploadProfilePic = require('../middleware/uploadProfileImage');
+    var updateProfilePicCode = require('../controller/uploadProfilePicture');
     //loomkmate login route
     app.route('/login').post([check('userid').isLength({ min: 4 }), check('password').isLength({ min: 5 })], lookmateLoginUserRoute.login);
     //lookmate registartion route
@@ -26,9 +29,15 @@ module.exports = function (app, io) {
     //app.route('/auth/otp/').post(verifyAuthToken, checkOTP.verifyOTP);
     //below is for Mysql update of appearance which was commented because I was trying to implement the same with rabbitmq.
     //app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],makeAppearance.addAppearance);
-    //merged the service to upload file/images to the server. //todo:check image properties as well, as of now only it should be jpeg or jpg
+    //merged the service to upload file/images to the server. 
+    //todo:check image properties as well, as of now only it should be jpeg or jpg, remove the images from the folder if database failed to record the image data to the db.
     app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],uploadImageToServer.uploadImageToServer,makeAppearance.addAppearance);
-    
+    //route for the comments 
+    //todo:verify image id sent in the request using custom validator
+    app.route('/comment').post(verifyAuthToken,[check('commentText').isLength({ min: 1 })],commentController.addComment);
+    //upload user profile pic.
+    //todo:verify image for an extension or should be a single update, delete it from folder if database failed to record the image in db.
+    app.route('/uploadprofilepic').post(verifyAuthToken,uploadProfilePic.uploadProfilePicOnFolder,updateProfilePicCode.updateProfilePicCode);
 
     /*todo: keep udpating the policy for the Socket URL update. 
     toinitialConnect:"connection" request:[token] response[error message]

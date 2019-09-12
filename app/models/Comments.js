@@ -6,7 +6,7 @@ const User = require("../models/User");
 const Appearance = require('../models/Appearance')
 
 
-const Comments = sequelize.define("appearance", {
+const Comments = sequelize.define("comments", {
     comment_id: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
