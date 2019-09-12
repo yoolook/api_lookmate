@@ -27,7 +27,7 @@ module.exports = function (app, io) {
     //below is for Mysql update of appearance which was commented because I was trying to implement the same with rabbitmq.
     //app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],makeAppearance.addAppearance);
     //merged the service to upload file/images to the server. //todo:check image properties as well, as of now only it should be jpeg or jpg
-    app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],uploadImageToServer.uploadImageToServer,makeAppearance.addAppearanceByCloud);
+    app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],uploadImageToServer.uploadImageToServer,makeAppearance.addAppearance);
     
 
     /*todo: keep udpating the policy for the Socket URL update. 

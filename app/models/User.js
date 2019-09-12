@@ -2,6 +2,7 @@ const Sequelize = require("sequelize");
 const Joi = require('joi');
 const jwt = require('jsonwebtoken');
 var authKeys = require('../../config/auth');
+//const Appearance = require('../models/Appearance')
 
 const User = sequelize.define("users", {
   user_id: {
@@ -54,7 +55,6 @@ const User = sequelize.define("users", {
     allowNull: false
   }
 });
-
 
 User.generateAuthToken = function (user_info) {
   //const accesstoken = jwt.sign({ id: this.nick_name }, SECRET_KEY); //get the private key from the config file -> environment variable

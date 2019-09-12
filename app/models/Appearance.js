@@ -1,7 +1,5 @@
 const Sequelize = require("sequelize");
-//const Joi = require('joi');
-//const jwt = require('jsonwebtoken');
-//var authKeys = require('../../config/auth');
+const User = require("../models/User");
 
 
 const Appearance = sequelize.define("appearance", {
@@ -25,11 +23,13 @@ const Appearance = sequelize.define("appearance", {
   },
   userid: {
     type: Sequelize.INTEGER(11),
-    allowNull: false,
-    primaryKey: true
+    allowNull: false
   },
   createdAt: Sequelize.DATE,
   updatedAt: Sequelize.DATE
 });
+
+//Associations
+Appearance.belongsTo(User)
 
 module.exports = Appearance;

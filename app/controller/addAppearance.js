@@ -1,16 +1,16 @@
 var Appearance = require('../models/Appearance');
-const publishToQueue = require('../database/connect-rabbitMQ');
+//const publishToQueue = require('../database/connect-rabbitMQ');
 var Pusher = require('pusher'); //use either pusher of publish to quirue
 var authKeys = require('../../config/auth');
 
 //configuration for pusher
-var feed_channel = new Pusher({
+/* var feed_channel = new Pusher({
     appId: authKeys.pusher_keys.app_id,
     key:authKeys.pusher_keys.key,
     secret:authKeys.pusher_keys.secret,
     cluster: authKeys.pusher_keys.cluster,
     encrypted: true
-  });
+  }); */
 
 exports.addAppearanceBySocket = function (status, user_info, callback) {
     //todo: compact the user_info (which is inserted while creating JWA ) from object inside object to outer object with all details.
@@ -64,6 +64,10 @@ exports.addAppearance = async function (req, res) {
         updatedAt: sequelize.fn('NOW'),
     }).then(appearanceMade => {
         if (appearanceMade) {
+            //opencomment:to push data on pusher
+            //closed: just not to push anything from persi environement and updating database addition functionality.
+            //feed_channel.trigger('push_feed_channel', 'push_feed_event',appearanceMade);
+            res.data = { "message-sent": true };
             res.send({
                 "code": 200,
                 "success": "user appearance made",
@@ -79,7 +83,7 @@ exports.addAppearance = async function (req, res) {
     }).catch(error => {
         res.send({
             "code": 400,
-            "failed": "server failed"
+            "failed": "server failed" + error
         });
     });
 }
@@ -98,7 +102,6 @@ Extract other info from token: (req.userDataFromToken)
 
 exports.addAppearanceByCloud = async function (req, res) {
     try {
-
             const payload={
             picture: req.body.picture,
             caption: req.body.caption,
@@ -109,7 +112,9 @@ exports.addAppearanceByCloud = async function (req, res) {
         }
         //code here is for rabbit mq, enable if required rabbit mq.
         //await publishToQueue("IntoFeeds", payload); 
-        feed_channel.trigger('push_feed_channel', 'push_feed',payload);
+        //opencomment:to push data on pusher
+        //closed: just not to push anything from persi environement and updating database addition functionality.
+        //feed_channel.trigger('push_feed_channel', 'push_feed',payload);
         res.statusCode = 200;
         res.data = { "message-sent": true };
         res.send({
