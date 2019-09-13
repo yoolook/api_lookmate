@@ -2,34 +2,24 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('appearances', {
-      appearance_id: {
+    return queryInterface.createTable('rate', {
+      rate_id: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
         autoIncrement: true,
         primaryKey: true
       },
-      picture: {
-        type: Sequelize.STRING(100),
-        allowNull: true
+      appearance_id: {
+        type: Sequelize.INTEGER(11),
+        allowNull: false
       },
-      caption: {
-        type: Sequelize.STRING(100),
+      rate: {
+        type: Sequelize.INTEGER(2),
         allowNull: true
-      },
-      location: {
-        type: Sequelize.STRING(100),
-        allowNull: true
-      },
-      allowComment:{
-        type: Sequelize.BOOLEAN,
-        allowNull: false,
-        defaultValue: true
       },
       userid: {
         type: Sequelize.INTEGER(11),
-        allowNull: false,
-        primaryKey: true
+        allowNull: false
       },
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE
@@ -37,6 +27,7 @@ module.exports = {
   },
 
   down: (queryInterface, Sequelize) => {
+    return queryInterface.dropTable('rate');
     /*
       Add reverting commands here.
       Return a promise to correctly handle asynchronicity.
@@ -44,6 +35,5 @@ module.exports = {
       Example:
       return queryInterface.dropTable('users');
     */
-   return queryInterface.dropTable('appearances');
   }
 };

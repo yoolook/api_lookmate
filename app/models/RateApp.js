@@ -1,12 +1,9 @@
 const Sequelize = require("sequelize");
-//const Joi = require('joi');
-//const jwt = require('jsonwebtoken');
-//var authKeys = require('../../config/auth');
 const User = require("../models/User");
 const Appearance = require('../models/Appearance')
 
-const Comments = sequelize.define("comments", {
-    comment_id: {
+const Rate = sequelize.define("rate", {
+    rate_id: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
         autoIncrement: true,
@@ -20,12 +17,8 @@ const Comments = sequelize.define("comments", {
             key: 'appearance_id'
         }
     },
-    comment: {
-        type: Sequelize.STRING(100),
-        allowNull: false
-    },
-    location: {
-        type: Sequelize.STRING(100),
+    rate: {
+        type: Sequelize.INTEGER(2),
         allowNull: true
     },
     userid: {
@@ -43,7 +36,7 @@ const Comments = sequelize.define("comments", {
 
 
 //Associations
-Comments.belongsTo(User);
-Comments.belongsTo(Appearance);
+Rate.belongsTo(User);
+Rate.belongsTo(Appearance);
 
-module.exports = Comments;
+module.exports = Rate;

@@ -16,6 +16,7 @@ module.exports = function (app, io) {
     var commentController = require('../controller/addComment');
     var uploadProfilePic = require('../middleware/uploadProfileImage');
     var updateProfilePicCode = require('../controller/uploadProfilePicture');
+    var rateController = require('../controller/rateAppearance');
     //loomkmate login route
     app.route('/login').post([check('userid').isLength({ min: 4 }), check('password').isLength({ min: 5 })], lookmateLoginUserRoute.login);
     //lookmate registartion route
@@ -33,12 +34,14 @@ module.exports = function (app, io) {
     //todo:check image properties as well, as of now only it should be jpeg or jpg, remove the images from the folder if database failed to record the image data to the db.
     app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],uploadImageToServer.uploadImageToServer,makeAppearance.addAppearance);
     //route for the comments 
-    //todo:verify image id sent in the request using custom validator
+    //todo:verify image id sent in the request using custom validator, implement to concept of x-socket-id
     app.route('/comment').post(verifyAuthToken,[check('commentText').isLength({ min: 1 })],commentController.addComment);
     //upload user profile pic.
-    //todo:verify image for an extension or should be a single update, delete it from folder if database failed to record the image in db.
+    //todo:verify image for an extension or should be a single update, delete it from folder if database failed to record the image in db, implement to concept of x-socket-id
     app.route('/uploadprofilepic').post(verifyAuthToken,uploadProfilePic.uploadProfilePicOnFolder,updateProfilePicCode.updateProfilePicCode);
-
+    //update rate by the user.
+    //todo:verify image id sent in the request using custom validator, check rate should be less then 5
+    app.route('/rateappearance').post(verifyAuthToken,[check('rate').isNumeric({lt:5,gt:1})],rateController.rateAppearance);
     /*todo: keep udpating the policy for the Socket URL update. 
     toinitialConnect:"connection" request:[token] response[error message]
     toAddAppearance: "addAppearance" request:[]

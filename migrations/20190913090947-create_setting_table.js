@@ -2,34 +2,36 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('appearances', {
-      appearance_id: {
+    return queryInterface.createTable('settings', {
+      setting_id: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
         autoIncrement: true,
         primaryKey: true
       },
-      picture: {
-        type: Sequelize.STRING(100),
-        allowNull: true
+      userid: {
+        type: Sequelize.INTEGER(11),
+        allowNull: false,
       },
-      caption: {
-        type: Sequelize.STRING(100),
-        allowNull: true
+      profileVisibleTo: {
+        type: Sequelize.INTEGER(2),
+        allowNull: false,
+        defaultValue: 1
       },
-      location: {
-        type: Sequelize.STRING(100),
-        allowNull: true
+      strictlyAnonymous: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
       },
-      allowComment:{
+      notificationScreen: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
         defaultValue: true
       },
-      userid: {
-        type: Sequelize.INTEGER(11),
+      notification_sms: {
+        type: Sequelize.BOOLEAN,
         allowNull: false,
-        primaryKey: true
+        defaultValue: false
       },
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE
@@ -44,6 +46,6 @@ module.exports = {
       Example:
       return queryInterface.dropTable('users');
     */
-   return queryInterface.dropTable('appearances');
+    return queryInterface.dropTable('settings');
   }
 };

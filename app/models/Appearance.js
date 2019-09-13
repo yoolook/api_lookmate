@@ -21,6 +21,11 @@ const Appearance = sequelize.define("appearance", {
     type: Sequelize.STRING(100),
     allowNull: true
   },
+  allowComment:{
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true
+  },
   userid: {
     type: Sequelize.INTEGER(11),
     allowNull: false
