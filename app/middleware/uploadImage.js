@@ -1,4 +1,5 @@
 var multer = require('multer');
+var adminConfig = require('../../config/adminConf');
 
 /* 
 https://dzone.com/articles/upload-files-or-images-to-server-using-nodejs
@@ -14,7 +15,7 @@ buffer: A Buffer of the entire file. */
 
 var Storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        callback(null, "./Images");
+        callback(null, adminConfig.appearance_location);
     },
     filename: function (req, file, callback) {
         var fileExt = file.originalname.split('.').pop();
@@ -23,23 +24,38 @@ var Storage = multer.diskStorage({
 });
 
 /* Here, multer accepts the storage we created in our previous step as the parameter. The function */
-var upload = multer({
-    storage: Storage
-}).array("pictures", 3); //Field name and max count
+const upload = multer({
+    limits: {
+        fileSize: adminConfig.appearance_file_upload_size,
+        files: adminConfig.appearance_file_upload_count
+    },
+    storage: Storage,
+    fileFilter: (req, file, cb) => {
+        // if the file extension is in our accepted list
+        if (adminConfig.accepted_extensions_of_image.some(ext => file.originalname.endsWith("." + ext))) {
+            return cb(null, true);
+        }
+        // otherwise, return error
+        return cb(new Error('Only ' + adminConfig.accepted_extensions_of_image.join(", ") + ' files are allowed!'));
+    }
+}).array("pictures", adminConfig.appearance_file_upload_count); //Field name and max count;
 
 exports.uploadImageToServer = async function (req, res, next) {
     upload(req, res, function (err) {
-        if (err)
+        if (err) {
             res.send({
-                'code':400,
-                'failure':"Error:" + err
+                'code': 400,
+                'failure': "Error:" + err
             });
-        var fileURL = [];
-        req.files.forEach(files => {
-            fileURL.push(files.path)
-        });
-        req.body.picture=fileURL;
-        next();
+        }
+        else {
+            var fileURL = [];
+            req.files.forEach(files => {
+                fileURL.push(files.path)
+            });
+            req.body.picture = fileURL;
+            next();
+        }
     });
 };
 

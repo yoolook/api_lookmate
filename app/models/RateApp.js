@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const User = require("../models/User");
 const Appearance = require('../models/Appearance')
 
-const Rate = sequelize.define("rate", {
+const Rate = sequelize.define("rates", {
     rate_id: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
@@ -33,10 +33,8 @@ const Rate = sequelize.define("rate", {
     updatedAt: Sequelize.DATE
 });
 
-
-
 //Associations
-Rate.belongsTo(User);
-Rate.belongsTo(Appearance);
+/* Rate.belongsTo(User);
+Rate.belongsTo(Appearance); */
 
 module.exports = Rate;

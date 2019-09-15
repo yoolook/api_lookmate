@@ -1,5 +1,7 @@
 var multer = require('multer');
 var uniqid = require('uniqid');
+var adminConfig = require('../../config/adminConf');
+
 //Generate a unique identifier for the image and update it in the user details database.
 /* 
 https://dzone.com/articles/upload-files-or-images-to-server-using-nodejs
@@ -15,7 +17,7 @@ buffer: A Buffer of the entire file. */
 
 var Storage = multer.diskStorage({
     destination: function (req, file, callback) {
-        callback(null, "./ProfileImages");
+        callback(null, adminConfig.profile_image_location);
     },
     filename: function (req, file, callback) {
         req.body.pictureCode=uniqid('lookmateImage');
@@ -25,9 +27,22 @@ var Storage = multer.diskStorage({
 });
 
 /* Here, multer accepts the storage we created in our previous step as the parameter. The function */
-var upload = multer({
-    storage: Storage
-}).array("profileImage", 1); //Field name and max count
+const upload = multer({
+    limits: {
+        fileSize: adminConfig.profile_image_upload_size,
+        files: adminConfig.profile_image_file_count
+    },
+    storage: Storage,
+    fileFilter: (req, file, cb) => {
+        // if the file extension is in our accepted list
+        if (adminConfig.accepted_extensions_of_image.some(ext => file.originalname.endsWith("." + ext))) {
+            return cb(null, true);
+        }
+        // otherwise, return error
+        return cb(new Error('Only ' + adminConfig.accepted_extensions_of_image.join(", ") + ' files are allowed!'));
+    }
+}).array("profileImage", adminConfig.profile_image_file_count);
+
 
 exports.uploadProfilePicOnFolder = async function (req, res, next) {
     upload(req, res, function (err) {
@@ -36,7 +51,8 @@ exports.uploadProfilePicOnFolder = async function (req, res, next) {
                 'code':400,
                 'failure':"Error:" + err
             });
-        next();
+        else
+            next();
     });
 };
 

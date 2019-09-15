@@ -2,6 +2,7 @@ var Rate = require('../models/RateApp');
 var Pusher = require('pusher'); //use either pusher of publish to quirue
 var authKeys = require('../../config/auth');
 const Sequelize = require("sequelize");
+const { validationResult } = require('express-validator');
 //configuration for pusher
 /* var feed_channel = new Pusher({
     appId: authKeys.pusher_keys.app_id,
@@ -12,6 +13,10 @@ const Sequelize = require("sequelize");
   }) ; */
 //todo:create the procedure with good logic, handle create and update in the same function and promise instead of different, 
 exports.rateAppearance = async function (req, res) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(422).json({ errors: errors.array() });
+    }
     await Rate.findOne({ where: Sequelize.and({ userid: req.userDataFromToken.user_info.user_id },{ appearance_id: req.body.appearanceid }) }).then( result => {  
         if (result) {
             //if we find that user already rated the pics.
@@ -31,6 +36,7 @@ exports.rateAppearance = async function (req, res) {
                         "code": 200,
                         "success": "image rated",
                         "user": ratedAgain.userid,
+                        "rate": ratedAgain.rate,
                         "createdAt": ratedAgain.createdAt
                     });
                 } else {
@@ -50,7 +56,7 @@ exports.rateAppearance = async function (req, res) {
         else{
             //if we do not find any entry, need to make entry in table.
             //if we find that user already rated the pics.
-            result.create({
+            Rate.create({
                 rate: req.body.rate,
                 appearance_id:req.body.appearanceid,
                 userid: req.userDataFromToken.user_info.user_id,
@@ -66,6 +72,7 @@ exports.rateAppearance = async function (req, res) {
                         "code": 200,
                         "success": "image rated",
                         "user": rated.userid,
+                        "rate": rated.rate,
                         "createdAt": rated.createdAt
                     });
                 } else {
