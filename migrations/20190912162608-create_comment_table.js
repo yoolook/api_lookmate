@@ -11,7 +11,11 @@ module.exports = {
       },
       appearance_id: {
         type: Sequelize.INTEGER(11),
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: "appearances",
+          key: "appearance_id"
+      }
       },
       comment: {
         type: Sequelize.STRING(100),
@@ -23,7 +27,11 @@ module.exports = {
       },
       userid: {
         type: Sequelize.INTEGER(11),
-        allowNull: false
+        allowNull: false,
+        references: {
+          model: "users",
+          key: 'user_id'
+      }
       },
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE

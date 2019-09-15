@@ -12,6 +12,10 @@ module.exports = {
       userid: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
+        references: {
+          model: "users",
+          key: 'user_id'
+      }
       },
       profileVisibleTo: {
         type: Sequelize.INTEGER(2),

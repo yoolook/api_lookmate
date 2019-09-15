@@ -29,7 +29,10 @@ module.exports = {
       userid: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
-        primaryKey: true
+        references: {
+          model: "users",
+          key: 'user_id'
+      }
       },
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE
