@@ -18,7 +18,8 @@ exports.addAppearanceBySocket = function (status, user_info, callback) {
     Appearance.create({
         caption: status,
         img_url: 'url',
-        userid: user_info.user_info.user_id
+        userid: user_info.user_info.user_id,
+        visible:true
     }).then(appearanceMade => {
         if (appearanceMade) {
             //res.send(users);

@@ -26,6 +26,11 @@ module.exports = {
         allowNull: false,
         defaultValue: true
       },
+      visible:{
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: true
+      },
       userid: {
         type: Sequelize.INTEGER(11),
         allowNull: false,

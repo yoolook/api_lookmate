@@ -13,6 +13,8 @@ const { validationResult } = require('express-validator');
 }; */
 //new register policies:
 //1. Nick name would be user until someone sets it from welcome page or setting.
+
+//todo:need to make trigger which should make entry in setting table.
 exports.register = function (req, res) { 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {

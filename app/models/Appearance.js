@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const User = require("../models/User");
 
 
-const Appearance = sequelize.define("appearance", {
+const Appearance = sequelize.define("appearances", {
   appearance_id: {
     type: Sequelize.INTEGER(11),
     allowNull: false,
@@ -26,15 +26,24 @@ const Appearance = sequelize.define("appearance", {
     allowNull: false,
     defaultValue: true
   },
+  visible:{
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+    defaultValue: true
+  },
   userid: {
     type: Sequelize.INTEGER(11),
-    allowNull: false
+    allowNull: false,
+    references: {
+      model: User,
+      key: 'user_id'
+  }
   },
   createdAt: Sequelize.DATE,
   updatedAt: Sequelize.DATE
 });
 
 //Associations
-Appearance.belongsTo(User)
+//Appearance.belongsTo(User)
 
 module.exports = Appearance;
