@@ -51,6 +51,10 @@ module.exports = function (app, io) {
     //todo:create an API to (GET API )get count of stalker, (GET API) list of user stalking to, delete the stalk relationship.
     app.route('/stalkuser').post(verifyAuthToken,[check('stalkUserId').isLength({ min: 1 })],stalkUserController.stalkUser);
     
+
+    //GET Request API's
+    app.route('/getStalkList').get(verifyAuthToken,stalkUserController.getStalkList);
+    
     
     //delete API's.
 
