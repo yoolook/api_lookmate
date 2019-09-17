@@ -17,7 +17,11 @@ module.exports = function (app, io) {
     var uploadProfilePic = require('../middleware/uploadProfileImage');
     var updateProfilePicCode = require('../controller/uploadProfilePicture');
     var rateController = require('../controller/rateAppearance');
+    var stalkUserController = require('../controller/stalkUser');
+
+    //delete imports
     var deleteAppearanceController = require('../controller/deleteAppearance');
+    
     //loomkmate login route
     app.route('/login').post([check('userid').isLength({ min: 4 }), check('password').isLength({ min: 5 })], lookmateLoginUserRoute.login);
     //lookmate registartion route
@@ -43,8 +47,14 @@ module.exports = function (app, io) {
     app.route('/uploadprofilepic').post(verifyAuthToken,uploadProfilePic.uploadProfilePicOnFolder,updateProfilePicCode.updateProfilePicCode);
     //update rate by the user.
     app.route('/rateappearance').post(verifyAuthToken,[check('rate').isIn([1,2,3,4,5])],rateController.rateAppearance);
+    //stalk user API's
+    //todo:create an API to (GET API )get count of stalker, (GET API) list of user stalking to, delete the stalk relationship.
+    app.route('/stalkuser').post(verifyAuthToken,[check('stalkUserId').isLength({ min: 1 })],stalkUserController.stalkUser);
+    
     
     //delete API's.
+
+    //soft delete appearances
     app.route('/deleteAppearance/:appearanceId').delete(verifyAuthToken,deleteAppearanceController.deleteAppearance);
     
     /*todo: keep udpating the policy for the Socket URL update. 
