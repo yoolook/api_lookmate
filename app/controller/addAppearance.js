@@ -4,13 +4,13 @@ var Pusher = require('pusher'); //use either pusher of publish to quirue
 var authKeys = require('../../config/auth');
 
 //configuration for pusher
-/* var feed_channel = new Pusher({
+var feed_channel = new Pusher({
     appId: authKeys.pusher_keys.app_id,
     key:authKeys.pusher_keys.key,
     secret:authKeys.pusher_keys.secret,
     cluster: authKeys.pusher_keys.cluster,
     encrypted: true
-  }); */
+  });
 
 exports.addAppearanceBySocket = function (status, user_info, callback) {
     //todo: compact the user_info (which is inserted while creating JWA ) from object inside object to outer object with all details.
@@ -67,7 +67,7 @@ exports.addAppearance = async function (req, res) {
         if (appearanceMade) {
             //opencomment:to push data on pusher
             //closed: just not to push anything from persi environement and updating database addition functionality.
-            //feed_channel.trigger('push_feed_channel', 'push_feed_event',appearanceMade);
+            feed_channel.trigger('push_feed_channel', 'push_feed_event',appearanceMade);
             res.data = { "message-sent": true };
             res.send({
                 "code": 200,
