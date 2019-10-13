@@ -1,10 +1,12 @@
 var express    = require('express');
 var bodyParser = require('body-parser');
+
 var http = require('http'); //only required when operating HTML from here , 
 //I used it only for socket purpose when testing it with client htmk on local browser.
 
 port = process.env.PORT || 3000;
 var app = express();
+app.use('/images', express.static(__dirname + '/Images'));
 var SeqConnection = require("./app/database/connection");
 
 // parse application/x-www-form-urlencoded

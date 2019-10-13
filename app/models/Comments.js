@@ -40,10 +40,8 @@ const Comments = sequelize.define("comments", {
     updatedAt: Sequelize.DATE
 });
 
-
-
 //Associations
-Comments.belongsTo(User);
-Comments.belongsTo(Appearance);
+/* Comments.belongsTo(User);
+Comments.belongsTo(Appearance); */
 
 module.exports = Comments;
