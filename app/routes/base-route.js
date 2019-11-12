@@ -18,7 +18,6 @@ module.exports = function (app, io) {
     var updateProfilePicCode = require('../controller/uploadProfilePicture');
     var rateController = require('../controller/rateAppearance');
     var stalkUserController = require('../controller/stalkUser');
-
     //delete imports
     var deleteAppearanceController = require('../controller/deleteAppearance');
     
@@ -50,11 +49,13 @@ module.exports = function (app, io) {
     //stalk user API's
     //todo:create an API to (GET API )get count of stalker, (GET API) list of user stalking to, delete the stalk relationship.
     app.route('/stalkuser').post(verifyAuthToken,[check('stalkUserId').isLength({ min: 1 })],stalkUserController.stalkUser);
-    
-
+    //todo:implement to concept of x-socket-id
+    app.route('/getComments').post(verifyAuthToken,commentController.getLatestComment);
     //GET Request API's
     app.route('/getStalkList').get(verifyAuthToken,stalkUserController.getStalkList);
     
+    //provide latest list of comments based on appearance id.
+    app.route('/latestComments').post(verifyAuthToken,);
     
     //delete API's.
 
