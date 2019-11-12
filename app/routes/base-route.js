@@ -55,7 +55,7 @@ module.exports = function (app, io) {
     app.route('/getStalkList').get(verifyAuthToken,stalkUserController.getStalkList);
     
     //provide latest list of comments based on appearance id.
-    app.route('/latestComments').post(verifyAuthToken,);
+    app.route('/getPreviousComment').post(verifyAuthToken,commentController.getPreviousComment);
     
     //delete API's.
 

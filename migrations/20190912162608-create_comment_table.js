@@ -15,7 +15,7 @@ module.exports = {
         references: {
           model: "appearances",
           key: "appearance_id"
-      }
+        }
       },
       comment: {
         type: Sequelize.STRING(100),
@@ -31,7 +31,15 @@ module.exports = {
         references: {
           model: "users",
           key: 'user_id'
-      }
+        }
+      },
+      reply_com_id: {
+        type: Sequelize.INTEGER(11),
+        allowNull: false
+      },
+      last_conv_comment: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false
       },
       createdAt: Sequelize.DATE,
       updatedAt: Sequelize.DATE
