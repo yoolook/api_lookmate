@@ -1,7 +1,9 @@
-var Comment = require('../models/Comments');
+//var Comment = require('../models/Comments');
+/* var User = require('../models/User');
 var Appearance = require('../models/Appearance');
 var Pusher = require('pusher'); //use either pusher of publish to quirue
-var authKeys = require('../../config/auth');
+var authKeys = require('../../config/auth'); */
+var db = require('../database/connection');
 
 //configuration for pusher
 /* var feed_channel = new Pusher({
@@ -48,11 +50,11 @@ exports.addComment = async function (req, res) {
 };
 
 addCommentToDb = async function(req,res){
-    Comment.create({
+    db.comment.create({
         comment: req.body.commentText,
         location: req.body.location,
         appearance_id: req.body.appearanceid,
-        userid: req.userDataFromToken.user_info.user_id,
+        user_id: req.userDataFromToken.user_info.user_id,
         reply_com_id: req.body.reply_com_id, //replyToCommentId should be 0 if its a first comment.
         last_conv_comment: true,
         createdAt: sequelize.fn('NOW'),
@@ -66,7 +68,7 @@ addCommentToDb = async function(req,res){
             res.send({
                 "code": 200,
                 "success": "comment added",
-                "user": commentAdded.userid,
+                "user": commentAdded.user_id,
                 "createdAt": commentAdded.createdAt
             });
         } else {
@@ -86,9 +88,18 @@ addCommentToDb = async function(req,res){
 
 // Get the latest comments from the comment database.
 exports.getLatestComment = async function (req, res) {
-    await Comment.findAll({
-        where: sequelize.and({ last_conv_comment:true, appearance_id: req.body.appearanceid })
+    await db.comments.findAll({
+        //order: 'created_at DESC',
+        attributes:['comment_id','comment','location','createdAt','user_id'],
+        where: db.sequelize.and({ last_conv_comment:true, appearance_id: req.body.appearanceid }),
+        include: [
+            {
+                attributes: ['nick_name','user_id'],
+                model: db.users
+            }
+        ]
     }).then(commentData => {
+        console.log("Returned data:" + JSON.stringify(commentData));
         res.send({
             "commentData": commentData,
         });
@@ -102,11 +113,19 @@ exports.getLatestComment = async function (req, res) {
 
 // Get the latest comments from the comment database.
 exports.getPreviousComment = async function (req, res) {
-    await Comment.findOne({
-        where: sequelize.and({ comment_id: req.body.commentId, appearance_id: req.body.appearanceid })
+    await db.comments.findOne({
+        attributes:['reply_com_id'],
+        where: db.sequelize.and({ comment_id: req.body.commentId, appearance_id: req.body.appearanceid })
     }).then(commentData => {
-        Comment.findOne({
-            where: sequelize.and({ comment_id:commentData.reply_com_id, appearance_id: req.body.appearanceid })
+        db.comments.findOne({
+            attributes:['comment_id','comment','location','createdAt','user_id'],
+            where: db.sequelize.and({ comment_id:commentData.reply_com_id, appearance_id: req.body.appearanceid }),
+            include: [
+                {
+                    attributes: ['nick_name'],
+                    model: db.users
+                }
+            ]
         }).then((innerCommentData)=>{
             res.send({
                 "commentData": innerCommentData,

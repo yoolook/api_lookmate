@@ -1,40 +1,38 @@
-const Sequelize = require("sequelize");
 const User = require("../models/User");
 const Appearance = require('../models/Appearance')
 
-const Rate = sequelize.define("rates", {
-    rate_id: {
-        type: Sequelize.INTEGER(11),
-        allowNull: false,
-        autoIncrement: true,
-        primaryKey: true
-    },
-    appearance_id: {
-        type: Sequelize.INTEGER(11),
-        allowNull: false,
-        references: {
-            model: Appearance,
-            key: 'appearance_id'
-        }
-    },
-    rate: {
-        type: Sequelize.INTEGER(2),
-        allowNull: true
-    },
-    userid: {
-        type: Sequelize.INTEGER(11),
-        allowNull: false,
-        references: {
-            model: User,
-            key: 'user_id'
-        }
-    },
-    createdAt: Sequelize.DATE,
-    updatedAt: Sequelize.DATE
-});
+module.exports = (sequelize, DataTypes) => {
+    const Rate = sequelize.define("rates", {
+        rate_id: {
+            type: DataTypes.INTEGER(11),
+            allowNull: false,
+            autoIncrement: true,
+            primaryKey: true
+        },
+        appearance_id: {
+            type: DataTypes.INTEGER(11),
+            allowNull: false,
+            references: {
+                model: Appearance,
+                key: 'appearance_id'
+            }
+        },
+        rate: {
+            type: DataTypes.INTEGER(2),
+            allowNull: true
+        },
+        userid: {
+            type: DataTypes.INTEGER(11),
+            allowNull: false,
+            references: {
+                model: User,
+                key: 'user_id'
+            }
+        },
+        createdAt: DataTypes.DATE,
+        updatedAt: DataTypes.DATE
+    });
+    return Rate;
+}
 
-//Associations
-/* Rate.belongsTo(User);
-Rate.belongsTo(Appearance); */
 
-module.exports = Rate;

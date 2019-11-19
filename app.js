@@ -3,11 +3,12 @@ var bodyParser = require('body-parser');
 
 var http = require('http'); //only required when operating HTML from here , 
 //I used it only for socket purpose when testing it with client htmk on local browser.
-
+//var db = require('./app/models/db');
 port = process.env.PORT || 3000;
 var app = express();
 app.use('/images', express.static(__dirname + '/Images'));
-var SeqConnection = require("./app/database/connection");
+
+var db = require('./app/database/connection');
 
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
@@ -36,21 +37,14 @@ app.get("/",function(req,res){
   res.sendFile(__dirname + '/socketCheck.html');
 });
 
-
 console.log('Lookmate server is running on: ' + port);
-
-
-
-
 /* io.on('connection', (socket) => {
   console.log('a user connected');
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
 });
- */
-
-
+*/
 /* app.route('/events').post((req, res) => {
   let userid = req.body.userid;
   io.emit('call progress event', { userid });
@@ -60,7 +54,3 @@ res.header('Content-Type', 'text/xml');
 res.send({ user:userid });
 }); */
 //--end:socket.io------------
-
-
-
-

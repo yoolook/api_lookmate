@@ -1,4 +1,4 @@
-var User = require('../models/User');
+var db = require('../database/connection')
 const bcrypt = require('bcryptjs');
 const Sequelize = require("sequelize");
 
@@ -15,11 +15,13 @@ var LoginInfo = function (loginInfo) {
 
 exports.login = async function (req, res) {
     //todo:check for null entries in nick_name as it has changed to null entry.
-    await User.findOne({ where: Sequelize.or({ nick_name: req.body.userid },{ email: req.body.userid }) }).then( result => {
+    await db.users.findOne({ 
+        attributes:['nick_name','email','first_time_user','password'],
+        where: Sequelize.or({ nick_name: req.body.userid },{ email: req.body.userid }) }).then( result => {
         console.log("login api results: " + JSON.stringify(result));    
         if (result) {
                 if (bcrypt.compareSync(req.body.password, result.password)) {
-                    res.header("x-access-token", User.generateAuthToken(result)).send({
+                    res.header("x-access-token", db.users.generateAuthToken(result)).send({
                         "code": 200,
                         "success": "login sucessfull",
                         "user": result.nick_name,

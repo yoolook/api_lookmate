@@ -1,49 +1,47 @@
-const Sequelize = require("sequelize");
 const User = require("../models/User");
 
-
+module.exports = (sequelize, DataTypes) => {
 const Appearance = sequelize.define("appearances", {
   appearance_id: {
-    type: Sequelize.INTEGER(11),
+    type: DataTypes.INTEGER(11),
     allowNull: false,
     autoIncrement: true,
     primaryKey: true
   },
   picture: {
-    type: Sequelize.STRING(100),
+    type: DataTypes.STRING(100),
     allowNull: true
   },
   caption: {
-    type: Sequelize.STRING(100),
+    type: DataTypes.STRING(100),
     allowNull: true
   },
   location: {
-    type: Sequelize.STRING(100),
+    type: DataTypes.STRING(100),
     allowNull: true
   },
   allowComment:{
-    type: Sequelize.BOOLEAN,
+    type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: true
   },
   visible:{
-    type: Sequelize.BOOLEAN,
+    type: DataTypes.BOOLEAN,
     allowNull: false,
     defaultValue: true
   },
   userid: {
-    type: Sequelize.INTEGER(11),
+    type: DataTypes.INTEGER(11),
     allowNull: false,
-    references: {
+ /*    references: {
       model: User,
       key: 'user_id'
-  }
+  } */
   },
-  createdAt: Sequelize.DATE,
-  updatedAt: Sequelize.DATE
+  createdAt: DataTypes.DATE,
+  updatedAt: DataTypes.DATE
 });
-
+ return Appearance;
+}
 //Associations
 //Appearance.belongsTo(User)
-
-module.exports = Appearance;

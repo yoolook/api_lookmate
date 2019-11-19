@@ -1,55 +1,57 @@
-const Sequelize = require("sequelize");
 //const Joi = require('joi');
 //const jwt = require('jsonwebtoken');
 //var authKeys = require('../../config/auth');
+
+var db = require('../database/connection');
 const User = require("../models/User");
 const Appearance = require('../models/Appearance')
 
+module.exports = (sequelize, DataTypes) => {
 const Comments = sequelize.define("comments", {
     comment_id: {
-        type: Sequelize.INTEGER(11),
+        type: DataTypes.INTEGER(11),
         allowNull: false,
         autoIncrement: true,
         primaryKey: true
     },
     appearance_id: {
-        type: Sequelize.INTEGER(11),
+        type: DataTypes.INTEGER(11),
         allowNull: false,
-        references: {
+     /*    references: {
             model: Appearance,
             key: 'appearance_id'
-        }
+        } */
     },
     comment: {
-        type: Sequelize.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: false
     },
     location: {
-        type: Sequelize.STRING(100),
+        type: DataTypes.STRING(100),
         allowNull: true
     },
-    userid: {
-        type: Sequelize.INTEGER(11),
+    user_id: {
+        type: DataTypes.INTEGER(11),
         allowNull: false,
         references: {
-            model: User,
+            model: db.user,
             key: 'user_id'
         },
     },
     reply_com_id: {
-        type: Sequelize.INTEGER(11),
+        type: DataTypes.INTEGER(11),
         allowNull: false
     },
     last_conv_comment:{
-        type: Sequelize.BOOLEAN,
+        type: DataTypes.BOOLEAN,
         allowNull: false
       },
-    createdAt: Sequelize.DATE,
-    updatedAt: Sequelize.DATE
+    createdAt: DataTypes.DATE,
+    updatedAt: DataTypes.DATE
 });
-
+ return Comments;
+}
 //Associations
 /* Comments.belongsTo(User);
 Comments.belongsTo(Appearance); */
 
-module.exports = Comments;
