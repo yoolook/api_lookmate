@@ -2,6 +2,7 @@ var Appearance = require('../models/Appearance');
 //const publishToQueue = require('../database/connect-rabbitMQ');
 var Pusher = require('pusher'); //use either pusher of publish to quirue
 var authKeys = require('../../config/auth');
+var db = require('../database/connection');
 
 //configuration for pusher
 var feed_channel = new Pusher({
@@ -15,7 +16,7 @@ var feed_channel = new Pusher({
 exports.addAppearanceBySocket = function (status, user_info, callback) {
     //todo: compact the user_info (which is inserted while creating JWA ) from object inside object to outer object with all details.
     //create appearance in the database.
-    Appearance.create({
+    db.appearances.create({
         caption: status,
         img_url: 'url',
         userid: user_info.user_info.user_id,
@@ -56,15 +57,20 @@ Location:
 */
 
 exports.addAppearance = async function (req, res) {
-    Appearance.create({
+    db.appearances.create({
         picture: (req.body.picture).toString(),
         caption: req.body.caption,
         location: req.body.location,
         userid: req.userDataFromToken.user_info.user_id,
-        createdAt: sequelize.fn('NOW'),
-        updatedAt: sequelize.fn('NOW'),
+        createdAt: db.sequelize.fn('NOW'),
+        updatedAt: db.sequelize.fn('NOW'),
+/*         createdAt: db.sequelize.literal('CURRENT_TIMESTAMP'),
+        updatedAt: db.sequelize.literal('CURRENT_TIMESTAMP'), */
     }).then(appearanceMade => {
         if (appearanceMade) {
+            console.log("\nReturn appearance made: " + JSON.stringify(appearanceMade));
+
+            console.log("\nUpdated data in appearance made: " + JSON.stringify(appearanceMade.createdAt));
             //opencomment:to push data on pusher
             //closed: just not to push anything from persi environement and updating database addition functionality.
             feed_channel.trigger('push_feed_channel', 'push_feed_event',appearanceMade);
@@ -108,8 +114,8 @@ exports.addAppearanceByCloud = async function (req, res) {
             caption: req.body.caption,
             location: req.body.location,
             userid: req.userDataFromToken.user_info.user_id,
-            createdAt: sequelize.fn('NOW'),
-            updatedAt: sequelize.fn('NOW'),
+            createdAt: db.sequelize.fn('NOW'),
+            updatedAt: db.sequelize.fn('NOW'),
         }
         //code here is for rabbit mq, enable if required rabbit mq.
         //await publishToQueue("IntoFeeds", payload); 

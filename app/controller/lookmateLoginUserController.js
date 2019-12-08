@@ -16,7 +16,7 @@ var LoginInfo = function (loginInfo) {
 exports.login = async function (req, res) {
     //todo:check for null entries in nick_name as it has changed to null entry.
     await db.users.findOne({ 
-        attributes:['nick_name','email','first_time_user','password'],
+        attributes:['user_id','nick_name','email','first_time_user','password'],
         where: Sequelize.or({ nick_name: req.body.userid },{ email: req.body.userid }) }).then( result => {
         console.log("login api results: " + JSON.stringify(result));    
         if (result) {

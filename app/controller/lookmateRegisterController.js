@@ -1,8 +1,10 @@
-var User = require('../models/User');
+
 const bcrypt = require('bcryptjs');
 const otplib =require('otplib');
 var authKeys = require('../../config/auth');
 const { validationResult } = require('express-validator');
+
+var db = require('../database/connection')
 //Operations object constructor
 /* var Operation = function (operation) {
     this.nick_name = operation.nick_name;
@@ -20,19 +22,19 @@ exports.register = function (req, res) {
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
     }
-    User.create({
+    db.users.create({
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password),
         otp:otplib.authenticator.generate(authKeys.secret_codes.otp_secret_key),
         verified:req.body.verified==undefined ? false:req.body.verified,
         phone:req.body.phone,
-        createdAt: sequelize.fn('NOW'),
-        updatedAt: sequelize.fn('NOW'),
+        createdAt: db.sequelize.fn('NOW'),
+        updatedAt: db.sequelize.fn('NOW'),
         first_time_user:true
     }).then(users => {
         if (users) {
             //res.send(users);
-            res.header("x-access-token", User.generateAuthToken(users)).send({
+            res.header("x-access-token", db.users.generateAuthToken(users)).send({
                 "code": 200,
                 "success": "user registered sucessfully",
                 "user": users.nick_name? "user":users.nick_name,
