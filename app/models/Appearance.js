@@ -38,8 +38,16 @@ const Appearance = sequelize.define("appearances", {
       key: 'user_id'
   } */
   },
-  createdAt: DataTypes.DATE,
-  updatedAt: DataTypes.DATE
+  createdAt: {
+    type: DataTypes.TIME,
+    allowNull: false,
+    defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+  },
+  updatedAt: {
+    type: DataTypes.TIME,
+    allowNull: false,
+    defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+  }
 });
  return Appearance;
 }
