@@ -29,8 +29,16 @@ module.exports = (sequelize, DataTypes) => {
                 key: 'user_id'
             }
         },
-        createdAt: DataTypes.DATE,
-        updatedAt: DataTypes.DATE
+        createdAt: {
+            field: 'created_at',
+            type: DataTypes.DATE,
+            allowNull: false
+        },
+        updatedAt: {
+            field: 'updated_at',
+            type: DataTypes.DATE,
+            allowNull: false
+        }
     });
     return Rate;
 }

@@ -39,14 +39,14 @@ const Appearance = sequelize.define("appearances", {
   } */
   },
   createdAt: {
-    type: DataTypes.TIME,
-    allowNull: false,
-    defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+    field: 'created_at',
+    type: DataTypes.DATE,
+    allowNull: false
   },
   updatedAt: {
-    type: DataTypes.TIME,
-    allowNull: false,
-    defaultValue: sequelize.literal('CURRENT_TIMESTAMP')
+    field: 'updated_at',
+    type: DataTypes.DATE,
+    allowNull: false
   }
 });
  return Appearance;

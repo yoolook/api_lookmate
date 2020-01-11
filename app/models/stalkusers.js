@@ -29,8 +29,16 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING(100),
       allowNull: true
     },
-    createdAt: DataTypes.DATE,
-    updatedAt: DataTypes.DATE
+    createdAt: {
+      field: 'created_at',
+      type: DataTypes.DATE,
+      allowNull: false
+    },
+    updatedAt: {
+      field: 'updated_at',
+      type: DataTypes.DATE,
+      allowNull: false
+    }
   });
   return Stalk;
 }

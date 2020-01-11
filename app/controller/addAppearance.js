@@ -62,10 +62,8 @@ exports.addAppearance = async function (req, res) {
         caption: req.body.caption,
         location: req.body.location,
         userid: req.userDataFromToken.user_info.user_id,
-        createdAt: db.sequelize.fn('NOW'),
-        updatedAt: db.sequelize.fn('NOW'),
-/*         createdAt: db.sequelize.literal('CURRENT_TIMESTAMP'),
-        updatedAt: db.sequelize.literal('CURRENT_TIMESTAMP'), */
+       /*  created_at: db.sequelize.fn('NOW'),
+        updated_at: db.sequelize.fn('NOW'), */
     }).then(appearanceMade => {
         if (appearanceMade) {
             console.log("\nReturn appearance made: " + JSON.stringify(appearanceMade));
@@ -79,7 +77,8 @@ exports.addAppearance = async function (req, res) {
                 "code": 200,
                 "success": "user appearance made",
                 "user": appearanceMade.userid,
-                "createdAt": appearanceMade.createdAt
+                "createdAt": appearanceMade.createdAt,
+                "updatedAt": appearanceMade.updatedAt,
             });
         } else {
             res.send({
