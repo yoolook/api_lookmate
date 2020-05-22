@@ -49,8 +49,9 @@ db.stalk = require('../models/stalkusers')(sequelize, Sequelize);
 
 //Relations
 //for user
-db.appearances.belongsTo(db.users);  
-db.appearances.hasMany(db.users);
+//info:commented on [22-05-2020] to stop getting appearance ID when verifying user with google auth.
+//db.appearances.belongsTo(db.users);  
+//db.appearances.hasMany(db.users);
 
 db.comments.belongsTo(db.users, { foreignKey: 'user_id' });  
 db.users.hasMany(db.comments);

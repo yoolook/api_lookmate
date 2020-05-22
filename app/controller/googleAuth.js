@@ -1,14 +1,19 @@
-var User = require('../models/User');
+var db = require('../database/connection')
 const { OAuth2Client } = require('google-auth-library');
 var authKeys = require('../../config/auth');
 var lookmateRegisterRoute = require('../controller/lookmateRegisterController');
-const client = new OAuth2Client(authKeys.googleAuth.clientID);
+
+/* dnd:used when auth is from backend, but now its from UI so running next line function */
+//const client = new OAuth2Client(authKeys.googleAuth.clientID);
+const client = new OAuth2Client({
+    clientId:authKeys.googleAuth.clientID,redirectUri:authKeys.googleAuth.callbackURL});
 
 exports.verify = function (req, res) {
+    //verify function verifies the user from google server.
     verify(req, res).then(async (payload) => {
         //check if payload is fine todo: apply more authentication to the payload.
         console.log("\npayload from google: " + JSON.stringify(payload));
-        let user = await User.findOne({ where: { email: payload.email } });
+        let user = await db.users.findOne({ where: { email: payload.email } });
         if (user) {
             //login and send back the response with jwt auth key.
             res.header("x-auth-token", User.generateAuthToken(user)).send({
