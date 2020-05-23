@@ -1,7 +1,8 @@
-var db = require('../database/connection')
-const { OAuth2Client } = require('google-auth-library');
+var db = require('../database/connection');
 var authKeys = require('../../config/auth');
 var lookmateRegisterRoute = require('../controller/lookmateRegisterController');
+const { OAuth2Client } = require('google-auth-library');
+
 
 /* dnd:used when auth is from backend, but now its from UI so running next line function */
 //const client = new OAuth2Client(authKeys.googleAuth.clientID);
@@ -13,23 +14,27 @@ exports.verify = function (req, res) {
     verify(req, res).then(async (payload) => {
         //check if payload is fine todo: apply more authentication to the payload.
         console.log("\npayload from google: " + JSON.stringify(payload));
-        let user = await db.users.findOne({ where: { email: payload.email } });
-        if (user) {
+        //if email exist getting the record and sending the user details.
+        await db.users.findOne({ where: { email: payload.email } }).then(result => {
+        if (result) {
             //login and send back the response with jwt auth key.
-            res.header("x-auth-token", User.generateAuthToken(user)).send({
-                "code": 200,
-                "success": "login sucessfull",
-                "user": user.nick_name,
-                "email": user.email,
-                "new_user": false
+            /* res.header("x-auth-token", db.users.generateAuthToken(result)).send({ */
+            res.send({
+                "code": 201,
+                "message": "login sucessfull",
+                "user": result.nick_name,
+                "email": result.email,
+                "new_user": false,
+                "authorization": db.users.generateAuthToken(result),
+                "realReturn": JSON.stringify(result)
             });
         }
         else {
-            console.log("user not found");
+            console.log("info:user not found");
             /*  --new user from google policies:
              1. password will be the email (automatically generated)
              2. Nick name will be 'user' for new user, unit he/she will set it from welcome screen or settings */
-            const user_info = {
+            var user_info = {
                 body:
                 {
                     email: payload.email,
@@ -41,16 +46,24 @@ exports.verify = function (req, res) {
             //create user and send back the response with jwt auth key and new user true, get user to create nick name.
             lookmateRegisterRoute.register(user_info, res);
         }
+    });
     }).catch(error => {
-        console.log("Google Auth Error: " + error)
-        res.send({ Error: "Error logged on server" + error })
+        console.log("Google Auth Error: " + error);
+        //todo:Need to be managed from response send final middleware.
+        var responseObject={
+            returnType:"Error", //could be error or success.
+            code:501,
+            message:"Catch from google Authorization",
+            realReturn:JSON.stringify(error)
+        }
+        res.status(400).send({responseObject })
     }
     );
 }
 
 async function verify(req, res) {
     const ticket = await client.verifyIdToken({
-        idToken: req.headers.authkey,
+        idToken: req.headers.authorization, //always recieved in small case on node. :(
         audience: authKeys.googleAuth.clientID  // Specify the CLIENT_ID of the app that accesses the backend
         // Or, if multiple clients access the backend:
         //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]

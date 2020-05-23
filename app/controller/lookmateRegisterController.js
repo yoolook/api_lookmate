@@ -34,23 +34,27 @@ exports.register = function (req, res) {
     }).then(users => {
         if (users) {
             //res.send(users);
-            res.header("x-access-token", db.users.generateAuthToken(users)).send({
-                "code": 200,
-                "success": "user registered sucessfully",
+            res.send({
+                "code": 201,
+                "message": "User registered sucessfully",
                 "user": users.nick_name? "user":users.nick_name,
                 "email": users.email,
                 "phone":users.phone,
                 "verified":users.verified,
-                "first_time_user":true
+                "first_time_user":true,
+                "authorization": db.users.generateAuthToken(result),
+                "realReturn":JSON.stringify(users)
             });
-        } else {
-            res.status(400).send("Error in registration");
         }
     }).catch(error => {
-        res.send({
-            "code": 400,
-            "failed": "error ocurred" + error
-        });
+        //todo:Need to be managed from response send final middleware.
+        var responseObject={
+            returnType:"Error", //could be error or success.
+            code:501,
+            message:"Catch from lookmate registration process",
+            realReturn:JSON.stringify(error)
+        }
+        res.status(400).send({responseObject })
     });
 }
 
