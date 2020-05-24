@@ -46,8 +46,11 @@ Error = {
 }
 
 Codes:
+200:Success
 401: When something is not found.
+402: Issue in SQL function.
 501: All Catches.
+502: Validation issue
 
 Changes done after 23:05:2020
 - I think x-access-token shouldn't be sent in res header, should be sent in res body.

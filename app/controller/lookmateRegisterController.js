@@ -20,8 +20,17 @@ var db = require('../database/connection')
 exports.register = function (req, res) { 
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        return res.status(422).json({ errors: errors.array() });
+        var responseObject={
+            returnType:"Error", //could be error or success.
+            code:502,
+            message:"Validation error in registration process",
+            realReturn:JSON.stringify(error)
+        }
+        /* return res.status(422).json({ errors: errors.array() }); */
+        //if it gives error update the above line to the below line.
+        return res.status(400).send({responseObject })
     }
+    console.log("\n Inside regitration process---" + JSON.stringify(req.body));
     db.users.create({
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password),
@@ -33,20 +42,23 @@ exports.register = function (req, res) {
         first_time_user:true
     }).then(users => {
         if (users) {
+            console.log("\n registerd user on this awesome app" + JSON.stringify(users));
             //res.send(users);
             res.send({
-                "code": 201,
+                "code": 200,
                 "message": "User registered sucessfully",
                 "user": users.nick_name? "user":users.nick_name,
                 "email": users.email,
                 "phone":users.phone,
                 "verified":users.verified,
                 "first_time_user":true,
-                "authorization": db.users.generateAuthToken(result),
+                "authorization": db.users.generateAuthToken(users),
                 "realReturn":JSON.stringify(users)
             });
         }
     }).catch(error => {
+        //todo:rollback if user won;t able to register.
+        console.log("\n There is a catch here " + JSON.stringify(error));
         //todo:Need to be managed from response send final middleware.
         var responseObject={
             returnType:"Error", //could be error or success.
@@ -54,7 +66,8 @@ exports.register = function (req, res) {
             message:"Catch from lookmate registration process",
             realReturn:JSON.stringify(error)
         }
-        res.status(400).send({responseObject })
+        res.status(501).send({responseObject })
     });
 }
+
 

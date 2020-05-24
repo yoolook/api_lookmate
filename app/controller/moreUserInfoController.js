@@ -8,7 +8,7 @@ exports.updateMoreInfo = async function(req,res){
         return res.status(422).json({ errors: errors.array() });
     }
     await User.findOne({
-        where: Sequelize.or({email:req.body.userIdentity},{phone:req.body.userIdentity})
+        where: Sequelize.or({email:req.body.userid},{phone:req.body.userid})
     }).then(
          (user) => {
             if(user){

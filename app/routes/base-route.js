@@ -18,6 +18,8 @@ module.exports = function (app, io) {
     var updateProfilePicCode = require('../controller/uploadProfilePicture');
     var rateController = require('../controller/rateAppearance');
     var stalkUserController = require('../controller/stalkUser');
+    var updatePasswordController = require('../controller/updatePassword');
+    var checkUserExists = require('../controller/checkUserExist');
     //delete imports
     var deleteAppearanceController = require('../controller/deleteAppearance');
     
@@ -25,11 +27,16 @@ module.exports = function (app, io) {
     app.route('/login').post([check('userid').isLength({ min: 4 }), check('password').isLength({ min: 5 })], lookmateLoginUserRoute.login);
     //lookmate registartion route
     //todo:add an entry using triggers in setting table as soon as user is created.
-    app.route('/register').post([check('userIdentity').isLength({ min: 4 }), check('password').isLength({ min: 5 })], generalMethods.checkMobileOrEmail, lookmateRegisterRoute.register);
+    app.route('/register').post([check('userid').isLength({ min: 4 }), check('password').isLength({ min: 5 })], generalMethods.checkMobileOrEmail, lookmateRegisterRoute.register);
+    //checkIfUserExists
+    app.route('/checkUserExists').post([check('userid').isLength({ min: 4 })],generalMethods.checkMobileOrEmail,checkUserExists.checkEmailorMobileExists)
     //google related URL's.
     app.route('/auth/google/').get(googleAuthorization.verify);
-    //google related URL's.
-    app.route('/auth/otp/').post(verifyAuthToken, generalMethods.checkMobileOrEmail, checkOTP.verifyOTP);
+    //Verify OTP of the user second stage of the application
+    app.route('/auth/otp/').post(verifyAuthToken,checkOTP.verifyOTP);
+    //Generate OTP and feed that in database API.
+    app.route('/auth/generateOTP').post(generalMethods.checkMobileOrEmail, checkOTP.generateOTP);
+    app.route('/updatePassword').post(verifyAuthToken,updatePasswordController.updatePassword);
     //register more user info into the database.
     app.route('/register/next').post(verifyAuthToken, [check('nick_name').isLength({ min: 4 }), check('birth_year_range').isLength({ min: 4 }), check('gender').isLength({ min: 1 }, { max: 1 })], lookmateMoreUserInfo.updateMoreInfo);
     //app.route('/auth/otp/').post(verifyAuthToken, checkOTP.verifyOTP);

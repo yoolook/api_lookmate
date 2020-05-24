@@ -8,17 +8,22 @@ var validator = require('validator');
  * @param res: provide the response if required.
  */
 
+ /* Updates:
+ 1. Updated userIdentification to userid as there is only one param on UI for register and login and both should be same.
+
+ */
+
 exports.checkMobileOrEmail = function (req, res, next) {
-    console.log("inside: in validators");
-    if (validator.isEmail(req.body.userIdentity)) {
+    console.log("inside: in validators--" + JSON.stringify(req.body));
+    if (validator.isEmail(req.body.userid)) {
         //assign email parameter, the provided email id
-        req.body.email = req.body.userIdentity;
+        req.body.email = req.body.userid;
         req.body.phone = null;
         next();
     }
-    else if (validator.isMobilePhone(req.body.userIdentity)) {
+    else if (validator.isMobilePhone(req.body.userid)) {
         req.body.email = null;
-        req.body.phone = req.body.userIdentity;
+        req.body.phone = req.body.userid;
         next();
     }
     else{
