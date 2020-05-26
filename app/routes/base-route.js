@@ -38,7 +38,7 @@ module.exports = function (app, io) {
     app.route('/auth/generateOTP').post(generalMethods.checkMobileOrEmail, checkOTP.generateOTP);
     app.route('/updatePassword').post(verifyAuthToken,updatePasswordController.updatePassword);
     //register more user info into the database.
-    app.route('/register/next').post(verifyAuthToken, [check('nick_name').isLength({ min: 4 }), check('birth_year_range').isLength({ min: 4 }), check('gender').isLength({ min: 1 }, { max: 1 })], lookmateMoreUserInfo.updateMoreInfo);
+    app.route('/updateWelcomeDetails').post(verifyAuthToken, [check('nickName').isLength({ min: 4 }), check('birthYear').isLength({ min: 4 }), check('gender').isLength({ min: 1 }, { max: 1 })], lookmateMoreUserInfo.updateMoreInfo);
     //app.route('/auth/otp/').post(verifyAuthToken, checkOTP.verifyOTP);
     //below is for Mysql update of appearance which was commented because I was trying to implement the same with rabbitmq.
     //app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],makeAppearance.addAppearance);
