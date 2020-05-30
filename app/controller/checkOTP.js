@@ -16,8 +16,7 @@ exports.verifyOTP = async function (req, res) {
         var responseObject = {
             returnType: "Error", //could be error or success.
             code: 502,
-            message: "Email or phone number not valid",
-            realReturn: JSON.stringify(error)
+            message: "Email or phone number not valid"
         }
         res.status(502).send({ responseObject })
         //return res.status(422).json({ errors: errors.array() });
@@ -57,8 +56,7 @@ exports.verifyOTP = async function (req, res) {
             var responseObject = {
                 returnType: "Error", //could be error or success.
                 code: 501,
-                message: "Catch from lookmate registration process",
-                realReturn: JSON.stringify(error)
+                message: "Catch from lookmate registration process"
             }
             res.status(501).send({ responseObject })
         });
@@ -72,11 +70,10 @@ exports.generateOTP = async function (req,res) {
         console.log("\m--got into errors" + JSON.stringify(errors));
         var responseObject = {
             returnType: "Error", //could be error or success.
-            code: 502,
-            message: "Email or phone number not valid",
-            realReturn: JSON.stringify(errors)
+            code: 206,
+            message: "Email or phone number not valid"
         }
-        res.status(502).send({ responseObject })
+        res.status(206).send(responseObject)
         //return res.status(422).json({ errors: errors.array() });
     }
     //find if phone or email present simply, here we need to check either one of them should present
@@ -85,8 +82,8 @@ exports.generateOTP = async function (req,res) {
         attributes: ['user_id'],
         where: db.sequelize.or({ email: req.body.userid }, { phone: req.body.userid })
     }).then(user => {
-            console.log("\n---got user here----" + JSON.stringify(user));
-                //todo:send OTP to mobile device machanism here.
+            console.log("\n--found data in:" + JSON.stringify(user));
+            if(user){  
                 user.update({
                     otp:otplib.authenticator.generate(authKeys.secret_codes.otp_secret_key)
                 }).then(result => {
@@ -101,21 +98,31 @@ exports.generateOTP = async function (req,res) {
                     //todo:Need to be managed from response send final middleware.
                     var responseObject = {
                         returnType: "Error", //could be error or success.
-                        code: 501,
-                        message: "Catch from updating user auth token",
-                        realReturn: JSON.stringify(error)
+                        code: 402,
+                        message: "Catch from updating user auth token"
                     }
-                    res.status(501).send({ responseObject })
+                    res.status(402).send(responseObject)
                 });
+            } else{
+                
+                console.log("\nShould get inside else");
+
+                var responseObject = {
+                    returnType: "Error", //could be error or success.
+                    code: 205,
+                    message: "Sorry, user is not available"
+                }
+                res.status(205).send(responseObject)
+            }
         }).catch(error => {
+            console.log("\nReal Error--" + JSON.stringify(error));
             //todo:Need to be managed from response send final middleware.
             var responseObject = {
                 returnType: "Error", //could be error or success.
-                code: 501,
-                message: "Catch from finding user or generating OTP",
-                realReturn: JSON.stringify(error)
+                code: 402,
+                message: "Catch from finding user or generating OTP"
             }
-            res.status(501).send({ responseObject })
+            res.status(201).send(responseObject)
         });
 
 }

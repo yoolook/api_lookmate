@@ -8,19 +8,19 @@ exports.checkEmailorMobileExists = async function(req,res,next){
         if(result){
             res.send({
                 "code": 201,
-                "message": "email already exists"
+                "message": "Sorry, username is not available"
             });
         }
         else{
             res.send({
                 "code": 200,
-                "message": "email does not exists"
+                "message": "Yupp!! username is available"
             });
         }
     }).catch (
         error => {
             res.send({
-                "code": 401,
+                "code": 402,
                 "message": "unknown error occured"
             });
         }

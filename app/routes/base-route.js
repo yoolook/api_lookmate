@@ -22,7 +22,8 @@ module.exports = function (app, io) {
     var checkUserExists = require('../controller/checkUserExist');
     //delete imports
     var deleteAppearanceController = require('../controller/deleteAppearance');
-    
+    //Silient login here.
+    app.route('/slogin').get(verifyAuthToken, lookmateLoginUserRoute.slogin);
     //loomkmate login route
     app.route('/login').post([check('userid').isLength({ min: 4 }), check('password').isLength({ min: 5 })], lookmateLoginUserRoute.login);
     //lookmate registartion route

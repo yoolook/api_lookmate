@@ -22,20 +22,20 @@ exports.register = function (req, res) {
     if (!errors.isEmpty()) {
         var responseObject={
             returnType:"Error", //could be error or success.
-            code:502,
+            code:206,
             message:"Validation error in registration process",
             realReturn:JSON.stringify(error)
         }
         /* return res.status(422).json({ errors: errors.array() }); */
         //if it gives error update the above line to the below line.
-        return res.status(400).send({responseObject })
+        return res.status(206).send(responseObject)
     }
     console.log("\n Inside regitration process---" + JSON.stringify(req.body));
     db.users.create({
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password),
         otp:otplib.authenticator.generate(authKeys.secret_codes.otp_secret_key),
-        verified:req.body.verified==undefined ? false:req.body.verified,
+        verified:false,
         phone:req.body.phone,
         createdAt: db.sequelize.fn('NOW'),
         updatedAt: db.sequelize.fn('NOW'),
@@ -52,8 +52,7 @@ exports.register = function (req, res) {
                 "phone":users.phone,
                 "verified":users.verified,
                 "first_time_user":true,
-                "authorization": db.users.generateAuthToken(users),
-                "realReturn":JSON.stringify(users)
+                "authorization": db.users.generateAuthToken(users)
             });
         }
     }).catch(error => {
@@ -62,11 +61,10 @@ exports.register = function (req, res) {
         //todo:Need to be managed from response send final middleware.
         var responseObject={
             returnType:"Error", //could be error or success.
-            code:501,
-            message:"Catch from lookmate registration process",
-            realReturn:JSON.stringify(error)
+            code:402,
+            message:"Catch from lookmate registration process"
         }
-        res.status(501).send({responseObject })
+        res.status(402).send(responseObject)
     });
 }
 

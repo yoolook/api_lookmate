@@ -14,7 +14,7 @@ var validator = require('validator');
  */
 
 exports.checkMobileOrEmail = function (req, res, next) {
-    console.log("inside: in validators--" + JSON.stringify(req.body));
+    console.log("inside in validators--" + JSON.stringify(req.body));
     if (validator.isEmail(req.body.userid)) {
         //assign email parameter, the provided email id
         req.body.email = req.body.userid;
@@ -27,9 +27,12 @@ exports.checkMobileOrEmail = function (req, res, next) {
         next();
     }
     else{
-        res.send({
-            "code": 400,
-            "failed": "User Identity is not valid"
-        });
+        console.log("\n into else part");
+        var responseObject={
+            returnType:"Error", //could be error or success.
+            code:206,
+            message:"Invalid user input"
+        }
+        res.status(206).send(responseObject)
     }
 };

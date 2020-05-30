@@ -47,9 +47,14 @@ Error = {
 
 Codes:
 200:Success
+201 Created.The request has been fulfilled and has resulted in one or more new resources being created.
+205: When username or password is incorrect, resources are not available. | show error message on UI.
+206: invalid format of input.
+------------------------------------
 401: When something is not found.
-402: Issue in SQL function.
-501: All Catches.
+402: Catch issue in SQL function | show error message from UI.
+
+501: The request was not completed. The server met an unexpected condition..
 502: Validation issue
 
 Changes done after 23:05:2020

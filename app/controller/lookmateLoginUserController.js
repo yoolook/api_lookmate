@@ -31,10 +31,8 @@ exports.login = async function (req, res) {
                         "success": "login sucessfull",
                         "user": result.nick_name,
                         "email": result.email,
-                        "new_user":false,
                         "first_time_user":result.first_time_user,
-                        "authorization": db.users.generateAuthToken(result),
-                        "realReturn":JSON.stringify(result)
+                        "authorization": db.users.generateAuthToken(result)
                     });
                 }
                 else {
@@ -42,29 +40,65 @@ exports.login = async function (req, res) {
                     //todo:Need to be managed from response send final middleware.
                     var responseObject={
                         returnType:"Error", //could be error or success.
-                        code:201,
+                        code:205,
                         message:"Incorrect Password"
                     }
-                    res.status(201).send({responseObject})
+                    res.status(205).send(responseObject)
                 }
             } else {
                 //todo:Need to be managed from response send final middleware.
                 var responseObject={
                     returnType:"Error", //could be error or success.
-                    code:401,
+                    code:205,
                     message:"Email does'nt exists."
                 }
-                res.status(402).send({responseObject})
+                res.status(205).send(responseObject)
             }
     }).catch((error)=>{ 
-        console.log("\n\n--error in catch login---" + JSON.stringify(error)); 
          //todo:Need to be managed from response send final middleware.
         var responseObject={
             returnType:"Error", //could be error or success.
-            code:501,
-            message:"Catch from login process",
-            realReturn:JSON.stringify(error)
+            code:402,
+            message:"Catch from login process"
         }
-        res.status(501).send({responseObject })
+        res.status(402).send(responseObject)
+    });
+}
+
+
+/* fucntion is for silient login as soon as user comes into the application */
+
+exports.slogin = async function (req, res) {  
+    console.log("\nEntered Slogin:" + JSON.stringify(req.userDataFromToken));  
+    await db.users.findOne({ 
+        attributes:['user_id','nick_name','email','first_time_user','password'],
+        where:{user_id: req.userDataFromToken.user_info.user_id} }).then( result => {
+        console.log("login api results: " + JSON.stringify(result));    
+        if (result) {
+                    res.send({
+                        "code": 200,
+                        "success": "Silient login confirmed",
+                        "user": result.nick_name,
+                        "email": result.email,
+                        "first_time_user":result.first_time_user,
+                        "authorization": db.users.generateAuthToken(result)
+                    });
+            } else {
+                //todo:Need to be managed from response send final middleware.
+                var responseObject={
+                    returnType:"Error", //could be error or success.
+                    code:205,
+                    message:"User does'nt exist"
+                }
+                res.status(205).send(responseObject)
+            }
+    }).catch((error)=>{ 
+         //todo:Need to be managed from response send final middleware.
+        var responseObject={
+            returnType:"Error", //could be error or success.
+            code:402,
+            message:"Catch from silient login"
+        }
+        res.status(402).send(responseObject)
     });
 }
