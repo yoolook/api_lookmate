@@ -5,6 +5,7 @@ const { check } = require('express-validator');
 var numClients = 0;
 
 module.exports = function (app, io) {
+    var testRouteController = require('../controller/testRoute');
     var lookmateLoginUserRoute = require('../controller/lookmateLoginUserController');
     var lookmateRegisterRoute = require('../controller/lookmateRegisterController');
     var googleAuthorization = require('../controller/googleAuth');
@@ -22,6 +23,8 @@ module.exports = function (app, io) {
     var checkUserExists = require('../controller/checkUserExist');
     //delete imports
     var deleteAppearanceController = require('../controller/deleteAppearance');
+    //for testing purpose
+    app.route('/test').get(testRouteController.testroutes);
     //Silient login here.
     app.route('/slogin').get(verifyAuthToken, lookmateLoginUserRoute.slogin);
     //loomkmate login route
@@ -61,7 +64,10 @@ module.exports = function (app, io) {
     app.route('/getComments').post(verifyAuthToken,commentController.getLatestComment);
     //GET Request API's
     app.route('/getStalkList').get(verifyAuthToken,stalkUserController.getStalkList);
-    
+    //GET latest upload pic, for as soon as user gets on the home page of application.
+    app.route('/getlatestAppearaces').get(verifyAuthToken,makeAppearance.getLatestAppearance);
+    //POST get appearance with details using the appearacnce id., when user clicks and open a appearance.
+    app.route('/getAppearance').post(makeAppearance.getAppearance);
     //provide latest list of comments based on appearance id.
     app.route('/getPreviousComment').post(verifyAuthToken,commentController.getPreviousComment);
     
@@ -77,11 +83,14 @@ module.exports = function (app, io) {
    //for testing purpose
    //app.route('/testcustomcheck').post([check('image').isImage()],function(){ console.log("function executed")});
 
+
+   /* fortest|start: revert comment here */
    io.use(verifyAuthSocketToken);
    io.on('connect', function (socket) {
     console.log("Client " + numClients++ +" in connect >" + JSON.stringify(socket.decoded));
         io.emit('refreshAppearance',"updated message");
    });
+   /* fortest"end */
 
 /*  //for experiment of of    
     var iosa = io.of('/lookmate');

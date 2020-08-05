@@ -6,7 +6,11 @@ var http = require('http'); //only required when operating HTML from here ,
 //var db = require('./app/models/db');
 port = process.env.PORT || 3000;
 var app = express();
+
+//opening Images and thumbnail folder to whole world.
+//todo: Use some strategy to limit the access to this folder and deliver the image through some script.
 app.use('/images', express.static(__dirname + '/Images'));
+app.use('/thumbnails', express.static(__dirname + '/Thumbnails'));
 
 var db = require('./app/database/connection');
 
@@ -27,16 +31,19 @@ var io        =     require("socket.io")(http); */
 
 var socket = require("socket.io")
 var server = app.listen(port,"0.0.0.0");
-
 var io= socket(server);
 
-routes(app,io); //register the route  */
+routes(app, io); //register the route  */
 
 app.get("/",function(req,res){
   res.sendFile(__dirname + '/socketCheck.html');
 });
 
 console.log('Lookmate server is running on: ' + port);
+
+//changes for the test thing.
+//module.exports = app
+
 
 //--helper---
 /* 1. Error formats/Object

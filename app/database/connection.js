@@ -55,6 +55,10 @@ db.stalk = require('../models/stalkusers')(sequelize, Sequelize);
 
 db.comments.belongsTo(db.users, { foreignKey: 'user_id' });  
 db.users.hasMany(db.comments);
+
+
+db.appearances.belongsTo(db.users, { foreignKey: 'user_id' });  
+db.users.hasMany(db.appearances);
 /* db.users.hasMany(db.rate); 
 db.users.hasMany(db.stalk);
 db.users.hasOne(db.setting); */

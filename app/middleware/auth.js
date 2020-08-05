@@ -9,8 +9,10 @@ exports.verifyAuthToken = function (req, res, next) {
   const token = req.headers["x-access-token"] || req.headers["authorization"];
   console.log("decoded value in Auth:" + token);
   //if no token found, return response (without going to the next middelware)
-  if (!token) return res.status(401).send("Access denied. No token provided.");
-
+  if (!token) {
+    console.log("token is not present");
+    return res.status(401).send("Access denied. No token provided.");
+  }
   try {
 
     //if can verify the token, set req.user and pass to next middleware
@@ -21,8 +23,15 @@ exports.verifyAuthToken = function (req, res, next) {
     console.log("Auth > UserDetails: " + JSON.stringify(decoded));
     next();
   } catch (ex) {
+    console.log("invalid token" + JSON.stringify(ex));
     //if invalid token
-    res.status(400).send("Invalid token." + ex);
+    //res.status(401).send("Invalid token." + ex);
+      var responseObject={
+        returnType:"Error", //could be error or success.
+        code:206,
+        message:"Catch from token auth"
+      }
+      res.status(206).send(responseObject);
   }
 };
 

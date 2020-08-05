@@ -1,17 +1,6 @@
 var multer = require('multer');
 var adminConfig = require('../../config/adminConf');
-
-/* 
-https://dzone.com/articles/upload-files-or-images-to-server-using-nodejs
-fieldname: Field name specified in the form.
-originalname: Name of the file on the user’s computer.
-encoding: Encoding type of the file.
-mimetype: Mime type of the file.
-size: Size of the file in bytes.
-destination: The folder to which the file has been saved.
-filename: The name of the file in the destination.
-path: The full path to the uploaded file.
-buffer: A Buffer of the entire file. */
+var Jimp = require('jimp');
 
 var Storage = multer.diskStorage({
     destination: function (req, file, callback) {
@@ -40,8 +29,19 @@ const upload = multer({
     }
 }).array("pictures", adminConfig.appearance_file_upload_count); //Field name and max count;
 
+async function generateThumbnails(images, width, height = Jimp.AUTO, quality, destination) {
+    return await Promise.all(
+        images.map(async imgPath => {
+            const image = await Jimp.read(imgPath.destination + "/" + imgPath.filename);
+            await image.resize(width, height);
+            await image.quality(quality);
+            await image.writeAsync(destination + imgPath.filename);
+        })
+    );
+};
+
 exports.uploadImageToServer = async function (req, res, next) {
-    upload(req, res, function (err) {
+    upload(req, res, async function (err) {
         if (err) {
             res.send({
                 'code': 400,
@@ -49,12 +49,26 @@ exports.uploadImageToServer = async function (req, res, next) {
             });
         }
         else {
-            var fileURL = [];
-            req.files.forEach(files => {
-                fileURL.push(files.path)
-            });
-            req.body.picture = fileURL;
-            next();
+            /* Before sending it to the next controller/module, we need to save it in the thumbnail folder as
+            well.
+            -using JIMP module (independent module) to save image as thumbnail, rest all can be deleted if found in package.json.
+            */  
+            var generateThumb = await generateThumbnails(req.files, 200, 200, 20, `${adminConfig.appearance_thumbnail_location}/`);
+            //it just return a space, todo: get something in return if have time, although its working for time being.
+            if (generateThumb) {
+                var fileURL = [];
+                req.files.forEach(files => {
+                    fileURL.push(files.filename)
+                });
+                req.body.picture = fileURL;
+                next();
+            } else {
+                console.log("Error in producing thumbnail");
+                res.send({
+                    'code': 400,
+                    'failure': "Could not generate thumbnails."
+                });
+            }
         }
     });
 };
