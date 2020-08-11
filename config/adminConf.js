@@ -8,4 +8,5 @@ module.exports = {
     'profile_image_upload_size':  5 * 1024 * 1024,  // 5 MB upload limit
     'profile_image_file_count':1,
     'profile_image_location':'./ProfileImages',
+    'uniqueImageCode':'lookmateImage'
 }

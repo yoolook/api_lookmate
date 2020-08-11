@@ -21,7 +21,7 @@ exports.login = async function (req, res) {
     console.log("\n--entered logined with---" + JSON.stringify(req.body));
     //todo:check for null entries in nick_name as it has changed to null entry.
     await db.users.findOne({ 
-        attributes:['user_id','nick_name','email','first_time_user','password'],
+        attributes:['user_id','nick_name','email','first_time_user','lastProfilePicId','password'],
         where: Sequelize.or({ nick_name: req.body.userid },{ email: req.body.userid }) }).then( result => {
         console.log("login api results: " + JSON.stringify(result));    
         if (result) {
@@ -32,6 +32,8 @@ exports.login = async function (req, res) {
                         "user": result.nick_name,
                         "email": result.email,
                         "first_time_user":result.first_time_user,
+                        //handle UI and check for null, if null then use default picture.
+                        "lastProfilePicId": result.lastProfilePicId,
                         "authorization": db.users.generateAuthToken(result)
                     });
                 }
@@ -71,7 +73,7 @@ exports.login = async function (req, res) {
 exports.slogin = async function (req, res) {  
     console.log("\nEntered Slogin:" + JSON.stringify(req.userDataFromToken));  
     await db.users.findOne({ 
-        attributes:['user_id','nick_name','email','first_time_user','password'],
+        attributes:['user_id','nick_name','email','first_time_user','lastProfilePicId','password'],
         where:{user_id: req.userDataFromToken.user_info.user_id} }).then( result => {
         console.log("login api results: " + JSON.stringify(result));    
         if (result) {
@@ -81,6 +83,7 @@ exports.slogin = async function (req, res) {
                         "user": result.nick_name,
                         "email": result.email,
                         "first_time_user":result.first_time_user,
+                        "lastProfilePicId": result.lastProfilePicId,
                         "authorization": db.users.generateAuthToken(result)
                     });
             } else {

@@ -4,7 +4,7 @@ exports.updatePassword = async function(req,res){
     console.log("\n\nInto update password:" + JSON.stringify(req.body))
     //todo:check for null entries in nick_name as it has changed to null entry.
     await db.users.findOne({
-        userid: req.userDataFromToken.user_info.user_id
+        where: { user_id: req.userDataFromToken.user_info.user_id }  
     }).then(
         (user) => {
             console.log("\n\nInto password update user" + JSON.stringify(user))

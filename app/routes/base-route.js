@@ -15,7 +15,6 @@ module.exports = function (app, io) {
     var makeAppearance = require('../controller/addAppearance');
     var uploadImageToServer = require('../middleware/uploadImage');
     var commentController = require('../controller/addComment');
-    var uploadProfilePic = require('../middleware/uploadProfileImage');
     var updateProfilePicCode = require('../controller/uploadProfilePicture');
     var rateController = require('../controller/rateAppearance');
     var stalkUserController = require('../controller/stalkUser');
@@ -54,7 +53,7 @@ module.exports = function (app, io) {
     app.route('/comment').post(verifyAuthToken,[check('commentText').isLength({ min: 1 })],commentController.addComment);
     //upload user profile pic.
     //todo:delete it from folder if database failed to record the image in db, implement to concept of x-socket-id
-    app.route('/uploadprofilepic').post(verifyAuthToken,uploadProfilePic.uploadProfilePicOnFolder,updateProfilePicCode.updateProfilePicCode);
+    app.route('/uploadprofilepic').post(verifyAuthToken,uploadImageToServer.uploadImageToServer,updateProfilePicCode.updateProfilePicCode);
     //update rate by the user.
     app.route('/rateappearance').post(verifyAuthToken,[check('rate').isIn([1,2,3,4,5])],rateController.rateAppearance);
     //stalk user API's

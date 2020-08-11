@@ -11,6 +11,7 @@ var app = express();
 //todo: Use some strategy to limit the access to this folder and deliver the image through some script.
 app.use('/images', express.static(__dirname + '/Images'));
 app.use('/thumbnails', express.static(__dirname + '/Thumbnails'));
+app.use('/profileimages', express.static(__dirname + '/ProfileImages'));
 
 var db = require('./app/database/connection');
 
