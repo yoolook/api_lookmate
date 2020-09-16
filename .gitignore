@@ -60,3 +60,9 @@ typings/
 # next.js build output
 .next
 
+
+# Assets directories
+ProfileImages/
+Thumbnails/
+Images/
+
