@@ -1,7 +1,5 @@
-var Rate = require('../models/RateApp');
-var Pusher = require('pusher'); //use either pusher of publish to quirue
+var db = require('../database/connection');
 var authKeys = require('../../config/auth');
-const Sequelize = require("sequelize");
 const { validationResult } = require('express-validator');
 //configuration for pusher
 /* var feed_channel = new Pusher({
@@ -17,15 +15,15 @@ exports.rateAppearance = async function (req, res) {
     if (!errors.isEmpty()) {
         return res.status(422).json({ errors: errors.array() });
     }
-    await Rate.findOne({ where: Sequelize.and({ userid: req.userDataFromToken.user_info.user_id },{ appearance_id: req.body.appearanceid }) }).then( result => {  
+    await db.rate.findOne({ where: db.sequelize.and({ user_id: req.userDataFromToken.user_info.user_id },{ appearance_id: req.body.appearanceid }) }).then( result => {  
         if (result) {
             //if we find that user already rated the pics.
             result.update({
                 rate: req.body.rate,
                 appearance_id:req.body.appearanceid,
-                userid: req.userDataFromToken.user_info.user_id,
-                createdAt: sequelize.fn('NOW'),
-                updatedAt: sequelize.fn('NOW'),
+                user_id: req.userDataFromToken.user_info.user_id,
+                createdAt: db.sequelize.fn('NOW'),
+                updatedAt: db.sequelize.fn('NOW'),
             }).then(ratedAgain => {
                 if (ratedAgain) {
                     //opencomment:to push data on pusher
@@ -34,21 +32,21 @@ exports.rateAppearance = async function (req, res) {
                     res.data = { "message-sent": true };
                     res.send({
                         "code": 200,
-                        "success": "image rated",
-                        "user": ratedAgain.userid,
+                        "message": "image rated",
+                        "user": ratedAgain.user_id,
                         "rate": ratedAgain.rate,
                         "createdAt": ratedAgain.createdAt
                     });
                 } else {
                     res.send({
                         "code": 204,
-                        "success": "Error in rating again this image"
+                        "message": "Error in rating again this image"
                     });
                 }
             }).catch(error => {
                 res.send({
                     "code": 400,
-                    "failed": "server failed " + error
+                    "message": "server failed " + error
                 });
             });
 
@@ -56,12 +54,12 @@ exports.rateAppearance = async function (req, res) {
         else{
             //if we do not find any entry, need to make entry in table.
             //if we find that user already rated the pics.
-            Rate.create({
+            db.rate.create({
                 rate: req.body.rate,
                 appearance_id:req.body.appearanceid,
-                userid: req.userDataFromToken.user_info.user_id,
-                createdAt: sequelize.fn('NOW'),
-                updatedAt: sequelize.fn('NOW'),
+                user_id: req.userDataFromToken.user_info.user_id,
+                createdAt: db.sequelize.fn('NOW'),
+                updatedAt: db.sequelize.fn('NOW'),
             }).then(rated => {
                 if (rated) {
                     //opencomment:to push data on pusher
@@ -70,25 +68,47 @@ exports.rateAppearance = async function (req, res) {
                     res.data = { "message-sent": true };
                     res.send({
                         "code": 200,
-                        "success": "image rated",
-                        "user": rated.userid,
+                        "message": "image rated",
+                        "user": rated.user_id,
                         "rate": rated.rate,
                         "createdAt": rated.createdAt
                     });
                 } else {
                     res.send({
                         "code": 204,
-                        "success": "Error in rating this image"
+                        "message": "Error in rating this image"
                     });
                 }
             }).catch(error => {
                 res.send({
                     "code": 400,
-                    "failed": "server failed " + error
+                    "message": "server failed " + error
                 });
             });
 
         }
     });
+};
 
+/* Get rate of the provided appearance for provided user id */
+exports.getRateAppearance = async function (req, res) {
+    console.log("get rate appearnce: " + req.params.apperanceId);
+    db.rate.findOne({ 
+        as: 'lm_rate',
+        where: db.sequelize.and({ appearance_id:req.params.apperanceId, user_id: req.userDataFromToken.user_info.user_id }),
+    }).then((appearanceRate)=>{
+        var responseRateAppearance=0;
+        if(appearanceRate)
+            var responseRateAppearance=appearanceRate.rate;
+
+        res.send({
+            "code": 200,
+            "rate": responseRateAppearance,
+        });
+    }).catch((error)=>{
+        res.send({
+            "code": 400,
+            "message": "server failed" + error
+        });
+    });           
 };

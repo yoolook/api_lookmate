@@ -17,12 +17,14 @@ exports.updateProfilePicCode = async function (req, res) {
         where: { user_id: req.userDataFromToken.user_info.user_id }
     }).then(
         (user) => {
+            console.log("photo search " + JSON.stringify(user));
             /* remove already existing image from the configured profile image folder. why here..?
             because, we want to call db only once, and this is the only place where controller is called ForeignKeyConstraintError, its worth to call fs and unlink fileURLToPath */
             if (user.lastProfilePicId) {
                 var path = adminConfig.profile_image_location + "/" + user.lastProfilePicId;
                 //todo: try if else on this, there is not catch on this, try to throw in else part.
-                fs.unlinkSync(path);
+                if(fs.existsSync(path))
+                    fs.unlinkSync(path);
             }
             //then update new name to db.
             user.update({

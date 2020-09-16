@@ -16,6 +16,11 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true
       },
+      registration_id: {
+        type: Sequelize.STRING(200),
+        allowNull: false,
+        unique: true
+      },
       nick_name: {
         type: Sequelize.STRING(25),
         allowNull: true,

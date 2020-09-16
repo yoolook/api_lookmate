@@ -17,6 +17,11 @@ module.exports = {
         type: Sequelize.STRING(100),
         allowNull: true
       },
+      anonymity: {
+        type: Sequelize.BOOLEAN,
+        allowNull: false,
+        defaultValue: false
+      },
       location: {
         type: Sequelize.STRING(100),
         allowNull: true

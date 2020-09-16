@@ -47,6 +47,9 @@ exports.register = function (req, res) {
             res.send({
                 "code": 200,
                 "message": "User registered sucessfully",
+                /* Just sending, so that UI can keep it in state and use it to match whether the user, is logined user or not logined user */
+                "user_id":users.user_id, 
+                //todo: should not be sent, create another unique key in database and send that.
                 "user": users.nick_name? "user":users.nick_name,
                 "email": users.email,
                 "phone":users.phone,

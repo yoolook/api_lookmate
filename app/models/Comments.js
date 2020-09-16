@@ -46,6 +46,10 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.BOOLEAN,
             allowNull: false
         },
+        annonymous: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false
+        },
         createdAt: {
             field: 'created_at',
             type: DataTypes.DATE,

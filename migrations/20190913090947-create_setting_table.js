@@ -9,7 +9,7 @@ module.exports = {
         autoIncrement: true,
         primaryKey: true
       },
-      userid: {
+      user_id: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
         references: {
@@ -22,6 +22,16 @@ module.exports = {
         allowNull: false,
         defaultValue: 1
       },
+      profilePictureVisibility: {
+        type: Sequelize.INTEGER(2),
+        allowNull: false,
+        defaultValue: 1
+      },
+      maxCommentCountPerPerson: {
+        type: Sequelize.INTEGER(2),
+        allowNull: false,
+        defaultValue: 1
+      }
       strictlyAnonymous: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
@@ -38,13 +48,13 @@ module.exports = {
         defaultValue: false
       },
       createdAt: {
-        field: 'created_at',
+        field: 'createdAt',
         type: Sequelize.DATE,
         allowNull: false,
         //defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
       },
       updatedAt: {
-        field: 'updated_at',
+        field: 'updatedAt',
         type: Sequelize.DATE,
         allowNull: false,
        // defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')

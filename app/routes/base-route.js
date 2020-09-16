@@ -7,6 +7,7 @@ var numClients = 0;
 module.exports = function (app, io) {
     var testRouteController = require('../controller/testRoute');
     var lookmateLoginUserRoute = require('../controller/lookmateLoginUserController');
+    var settingController = require('../controller/settingController');
     var lookmateRegisterRoute = require('../controller/lookmateRegisterController');
     var googleAuthorization = require('../controller/googleAuth');
     var generalMethods = require('../middleware/general.validators');
@@ -15,6 +16,7 @@ module.exports = function (app, io) {
     var makeAppearance = require('../controller/addAppearance');
     var uploadImageToServer = require('../middleware/uploadImage');
     var commentController = require('../controller/addComment');
+    var notificationController = require('../controller/notification');
     var updateProfilePicCode = require('../controller/uploadProfilePicture');
     var rateController = require('../controller/rateAppearance');
     var stalkUserController = require('../controller/stalkUser');
@@ -22,6 +24,7 @@ module.exports = function (app, io) {
     var checkUserExists = require('../controller/checkUserExist');
     //delete imports
     var deleteAppearanceController = require('../controller/deleteAppearance');
+    var customValidation = require('../middleware/custom-validators')
     //for testing purpose
     app.route('/test').get(testRouteController.testroutes);
     //Silient login here.
@@ -50,35 +53,48 @@ module.exports = function (app, io) {
     app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],uploadImageToServer.uploadImageToServer,makeAppearance.addAppearance);
     //route for the comments 
     //todo:implement to concept of x-socket-id
-    app.route('/comment').post(verifyAuthToken,[check('commentText').isLength({ min: 1 })],commentController.addComment);
+    app.route('/addComment').post(verifyAuthToken,[check('commentText').isLength({ min: 1 })],commentController.addComment);
+    //todo:implement to concept of x-socket-id
+    app.route('/getComments/:apperanceId').get(verifyAuthToken,commentController.getLatestComment);
     //upload user profile pic.
     //todo:delete it from folder if database failed to record the image in db, implement to concept of x-socket-id
     app.route('/uploadprofilepic').post(verifyAuthToken,uploadImageToServer.uploadImageToServer,updateProfilePicCode.updateProfilePicCode);
     //update rate by the user.
     app.route('/rateappearance').post(verifyAuthToken,[check('rate').isIn([1,2,3,4,5])],rateController.rateAppearance);
+    //get rate for specific appearance and for specific user.
+    app.route('/getrateappearance/:apperanceId').get(verifyAuthToken,rateController.getRateAppearance);
     //stalk user API's
     //todo:create an API to (GET API )get count of stalker, (GET API) list of user stalking to, delete the stalk relationship.
     app.route('/stalkuser').post(verifyAuthToken,[check('stalkUserId').isLength({ min: 1 })],stalkUserController.stalkUser);
-    //todo:implement to concept of x-socket-id
-    app.route('/getComments').post(verifyAuthToken,commentController.getLatestComment);
     //GET Request API's
     app.route('/getStalkList').get(verifyAuthToken,stalkUserController.getStalkList);
     //GET latest upload pic, for as soon as user gets on the home page of application.
     app.route('/getlatestAppearaces').get(verifyAuthToken,makeAppearance.getLatestAppearance);
+    //GET latest upload pic of a particular user.
+    app.route('/getMyLatestAppearance').get(verifyAuthToken,makeAppearance.getMyLatestAppearance);
+    
+    
     //POST get appearance with details using the appearacnce id., when user clicks and open a appearance.
     app.route('/getAppearance').post(makeAppearance.getAppearance);
     //provide latest list of comments based on appearance id.
     app.route('/getPreviousComment').post(verifyAuthToken,commentController.getPreviousComment);
     
-    //delete API's.
+    //notification API's
+    app.route('/getLatestNotifications').get(verifyAuthToken,notificationController.getLatestNotificationFromDatabaseForUser)
+    app.route('/getUnreadNotificationsCount').get(verifyAuthToken,notificationController.getUnreadNotificationCountFromDatabaseForUser)
+    app.route('/markReadNotification').get(verifyAuthToken,notificationController.markReadAllNotificationFromDatabaseForUser)
 
     //soft delete appearances
     app.route('/deleteAppearance/:appearanceId').delete(verifyAuthToken,deleteAppearanceController.deleteAppearance);
-    
+    app.route('/submitRegistrationId').post(verifyAuthToken,lookmateLoginUserRoute.submitRegistrationId);
     /*todo: keep udpating the policy for the Socket URL update. 
     toinitialConnect:"connection" request:[token] response[error message]
     toAddAppearance: "addAppearance" request:[]
     */
+    /* Setting routes */
+    app.route('/getUserSettings').get(verifyAuthToken,settingController.getUserSettings);
+    app.route('/setUserSettings').post(verifyAuthToken,[check('setValue').isLength({ min: 1 }),check('setValue').custom(customValidation.authorizedSettings)],settingController.setUserSettings);
+    
    //for testing purpose
    //app.route('/testcustomcheck').post([check('image').isImage()],function(){ console.log("function executed")});
 

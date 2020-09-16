@@ -11,6 +11,11 @@ module.exports = (sequelize, DataTypes) => {
       autoIncrement: true,
       primaryKey: true
     },
+    registration_id: {
+      type: DataTypes.STRING(200),
+      allowNull: false,
+      unique: true
+    },
     nick_name: {
       type: DataTypes.STRING(25),
       allowNull: true,

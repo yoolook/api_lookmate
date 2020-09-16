@@ -29,6 +29,9 @@ exports.login = async function (req, res) {
                     res.send({
                         "code": 200,
                         "success": "login sucessfull",
+                        /* Just sending, so that UI can keep it in state and use it to match whether the user, is logined user or not logined user */
+                        "user_id":result.user_id, 
+                        //todo: should not be sent, create another unique key in database and send that.
                         "user": result.nick_name,
                         "email": result.email,
                         "first_time_user":result.first_time_user,
@@ -80,6 +83,9 @@ exports.slogin = async function (req, res) {
                     res.send({
                         "code": 200,
                         "success": "Silient login confirmed",
+                        /* Just sending, so that UI can keep it in state and use it to match whether the user, is logined user or not logined user */
+                        "user_id":result.user_id, 
+                        //todo: should not be sent, create another unique key in database and send that.
                         "user": result.nick_name,
                         "email": result.email,
                         "first_time_user":result.first_time_user,
@@ -104,4 +110,33 @@ exports.slogin = async function (req, res) {
         }
         res.status(402).send(responseObject)
     });
+}
+
+exports.submitRegistrationId = async function(req,res){
+    console.log("Firebase token registration is called with token " + req.body.FCMRegistrationId);
+    await db.users.findOne({ where: { user_id: req.userDataFromToken.user_info.user_id }})
+    .then(function (responseData) {
+    // Check if record exists in db
+    if (responseData) {
+        responseData.update({
+            registration_id:req.body.FCMRegistrationId
+      }).then(function (updated) {
+        res.send({
+            "code": 200,
+            "success": "Silient login confirmed",
+/*          todo: check if user should be updated with authorization token or not.   
+            "user": updated.user_id,
+            "authorization": db.users.generateAuthToken(result) */
+        });
+      }).catch(function(error){
+        console.log("Error in update" + error);
+        var responseObject={
+            returnType:"Error", //user does'nt exist.
+            code:205,
+            message:"Email does'nt exists."
+        }
+        res.status(205).send(responseObject)
+      });
+    }
+  });
 }

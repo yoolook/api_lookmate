@@ -1,7 +1,6 @@
 var Stalk = require('../models/stalkusers');
 var User = require('../models/User');
 const Sequelize = require("sequelize");
-var Pusher = require('pusher'); //use either pusher of publish to quirue
 var authKeys = require('../../config/auth');
 
 //configuration for pusher

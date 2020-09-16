@@ -1,29 +1,14 @@
 'use strict';
 
 module.exports = {
-  up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('comments', {
-      comment_id: {
+  up: async (queryInterface, Sequelize) => {
+    
+    return queryInterface.createTable('notifications', {
+      notification_id: {
         type: Sequelize.INTEGER(11),
         allowNull: false,
         autoIncrement: true,
         primaryKey: true
-      },
-      appearance_id: {
-        type: Sequelize.INTEGER(11),
-        allowNull: false,
-        references: {
-          model: "appearances",
-          key: "appearance_id"
-        }
-      },
-      comment: {
-        type: Sequelize.STRING(100),
-        allowNull: false
-      },
-      location: {
-        type: Sequelize.STRING(100),
-        allowNull: true
       },
       user_id: {
         type: Sequelize.INTEGER(11),
@@ -33,17 +18,22 @@ module.exports = {
           key: 'user_id'
         }
       },
-      reply_com_id: {
+      appearance_id: {
         type: Sequelize.INTEGER(11),
+        allowNull: false,
+        references: {
+          model: "appearances",
+          key: "appearance_id"
+        }
+      },
+      notification: {
+        type: Sequelize.STRING(100),
         allowNull: false
       },
-      last_conv_comment: {
-        type: Sequelize.BOOLEAN,
-        allowNull: false
-      },
-      annonymous: {
+      read: {
         type: DataTypes.BOOLEAN,
-        allowNull: false
+        allowNull: false,
+        defaultValue: false
       },
       createdAt: {
         field: 'created_at',
@@ -60,7 +50,13 @@ module.exports = {
     });
   },
 
-  down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('comments');
+  down: async (queryInterface, Sequelize) => {
+    /**
+     * Add reverting commands here.
+     *
+     * Example:
+     * await queryInterface.dropTable('users');
+     */
+    return queryInterface.dropTable('notifications');
   }
 };

@@ -1,5 +1,4 @@
-const User = require("../models/User");
-const Appearance = require('../models/Appearance')
+var db = require('../database/connection');
 
 module.exports = (sequelize, DataTypes) => {
     const Rate = sequelize.define("rates", {
@@ -13,7 +12,7 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER(11),
             allowNull: false,
             references: {
-                model: Appearance,
+                model: db.appearances,
                 key: 'appearance_id'
             }
         },
@@ -21,11 +20,11 @@ module.exports = (sequelize, DataTypes) => {
             type: DataTypes.INTEGER(2),
             allowNull: true
         },
-        userid: {
+        user_id: {
             type: DataTypes.INTEGER(11),
             allowNull: false,
             references: {
-                model: User,
+                model: db.users,
                 key: 'user_id'
             }
         },

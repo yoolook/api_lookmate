@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
             autoIncrement: true,
             primaryKey: true
         },
-        userid: {
+        user_id: {
             type: DataTypes.INTEGER(11),
             allowNull: false,
             references: {
@@ -17,6 +17,16 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         profileVisibleTo: {
+            type: DataTypes.INTEGER(2),
+            allowNull: false,
+            defaultValue: 1
+        },
+        profilePictureVisibility: {
+            type: DataTypes.INTEGER(2),
+            allowNull: false,
+            defaultValue: 1
+        },
+        maxCommentCountPerPerson:{
             type: DataTypes.INTEGER(2),
             allowNull: false,
             defaultValue: 1
@@ -37,12 +47,12 @@ module.exports = (sequelize, DataTypes) => {
             defaultValue: false
         },
         createdAt: {
-            field: 'created_at',
+            field: 'createdAt',
             type: DataTypes.DATE,
             allowNull: false
         },
         updatedAt: {
-            field: 'updated_at',
+            field: 'updatedAt',
             type: DataTypes.DATE,
             allowNull: false
         }

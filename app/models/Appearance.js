@@ -20,6 +20,11 @@ const Appearance = sequelize.define("appearances", {
     type: DataTypes.STRING(100),
     allowNull: true
   },
+  anonymity: {
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  },
   location: {
     type: DataTypes.STRING(100),
     allowNull: true
