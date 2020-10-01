@@ -149,36 +149,57 @@ exports.getLatestAppearance = async function (req, res) {
 
 /* 
 @Description: Used to get the latest images of particular user.
++ addon function below to check for entitlement.
 @Todo: Count of image delivered should be controller with some way, either from server or from UI.
 2. Decide response contract at some point of time.
 */
 //appearance_id,picture,caption, location, allowComment, visible, user_id, createdAt, updatedAt
-exports.getMyLatestAppearance = async function (req, res) {
-    db.appearances.findAll({ 
-        attributes:['appearance_id','picture','location','createdAt','user_id'],
-        where: { user_id: req.userDataFromToken.user_info.user_id },
-        limit: 30, 
-        order: [['createdAt', 'DESC']]
-    }).then((results)=>{
-        /* converting the results to the contract format.
-        - Removed nick_name, as it should not be required on blink screen.
-        - todo:Remove nickname code from sequelize as well if not needed in future | Handle for multiple images by one user. */
-        results = results.map((response)=>{
-            return {
-                "picture":response.picture,
-                "appearance_id":response.appearance_id
-            }
+exports.getUserLatestAppearance = async function (req, res) {
+    var requestedUser = getUserBasedOnEntitlement(req);
+    if(requestedUser){
+        db.appearances.findAll({ 
+            attributes:['appearance_id','picture','location','createdAt','user_id'],
+            where: { user_id:requestedUser},
+            limit: 30, 
+            order: [['createdAt', 'DESC']]
+        }).then((results)=>{
+            /* converting the results to the contract format.
+            - Removed nick_name, as it should not be required on blink screen.
+            - todo:Remove nickname code from sequelize as well if not needed in future | Handle for multiple images by one user. */ 
+            results = results.map((response)=>{
+                return {
+                    "picture":response.picture,
+                    "appearance_id":response.appearance_id
+                }
+            });
+            //console.log("Returned data:" + JSON.stringify(results));
+            res.send({code:200,data:results});
+        }).catch(error => {
+            res.send({
+                "code": 400,
+                "message": "server failed" + error
+            });
         });
-        //console.log("Returned data:" + JSON.stringify(results));
-        res.send({code:200,data:results});
-    }).catch(error => {
-        res.send({
-            "code": 400,
-            "message": "server failed" + error
-        });
-    });
+    } else {
+        //throw back user back to UI with NOACCESS message.
+            res.send({
+                "code": 400,
+                "data":null,
+                "message": "profile is private"
+            });
+    }
 };
 
+
+getUserBasedOnEntitlement = function(req){
+    if(req.userEntitlements!=null){
+        if(req.userEntitlements["profileVisibleTo"]==1)
+            return false;
+        else
+            return req.userEntitlements["user_id"];
+    } else
+        return req.userDataFromToken.user_info.user_id;
+}
 
 
 /* 

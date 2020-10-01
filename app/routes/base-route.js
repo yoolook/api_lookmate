@@ -70,14 +70,17 @@ module.exports = function (app, io) {
     app.route('/getStalkList').get(verifyAuthToken,stalkUserController.getStalkList);
     //GET latest upload pic, for as soon as user gets on the home page of application.
     app.route('/getlatestAppearaces').get(verifyAuthToken,makeAppearance.getLatestAppearance);
-    //GET latest upload pic of a particular user.
-    app.route('/getMyLatestAppearance').get(verifyAuthToken,makeAppearance.getMyLatestAppearance);
+    //GET latest upload pic of a particular user if user_id is set, otherwise get for logined user. 
+    app.route('/getUserAppearance/:user_id').get(verifyAuthToken,generalMethods.checkUserAndGetEntitlements,makeAppearance.getUserLatestAppearance);
     
     
     //POST get appearance with details using the appearacnce id., when user clicks and open a appearance.
     app.route('/getAppearance').post(makeAppearance.getAppearance);
     //provide latest list of comments based on appearance id.
     app.route('/getPreviousComment').post(verifyAuthToken,commentController.getPreviousComment);
+    
+    //Get user related data with permissions, strictly check entitlement for this.
+    app.route('/getUserInformation/:user_id').get(verifyAuthToken,generalMethods.checkUserAndGetEntitlements,lookmateMoreUserInfo.getUserInformation);
     
     //notification API's
     app.route('/getLatestNotifications').get(verifyAuthToken,notificationController.getLatestNotificationFromDatabaseForUser)
@@ -93,6 +96,8 @@ module.exports = function (app, io) {
     */
     /* Setting routes */
     app.route('/getUserSettings').get(verifyAuthToken,settingController.getUserSettings);
+    //check if userid sent in the body exists with us first before going ahead with permissions. 
+    app.route('/getOtherUsersEntitlements').post(verifyAuthToken,generalMethods.checkUserAndGetEntitlements,settingController.getOtherUsersEntitlements);
     app.route('/setUserSettings').post(verifyAuthToken,[check('setValue').isLength({ min: 1 }),check('setValue').custom(customValidation.authorizedSettings)],settingController.setUserSettings);
     
    //for testing purpose
@@ -105,6 +110,8 @@ module.exports = function (app, io) {
     console.log("Client " + numClients++ +" in connect >" + JSON.stringify(socket.decoded));
         io.emit('refreshAppearance',"updated message");
    });
+
+
    /* fortest"end */
 
 /*  //for experiment of of    

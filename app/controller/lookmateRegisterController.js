@@ -3,8 +3,10 @@ const bcrypt = require('bcryptjs');
 const otplib =require('otplib');
 var authKeys = require('../../config/auth');
 const { validationResult } = require('express-validator');
-
-var db = require('../database/connection')
+var settingsOperation = require('../controller/settingController');
+var db = require('../database/connection');
+//todo:move this to config.
+var newUserTempRegisterationId = require('uniqid');
 //Operations object constructor
 /* var Operation = function (operation) {
     this.nick_name = operation.nick_name;
@@ -30,12 +32,14 @@ exports.register = function (req, res) {
         //if it gives error update the above line to the below line.
         return res.status(206).send(responseObject)
     }
+    
     console.log("\n Inside regitration process---" + JSON.stringify(req.body));
     db.users.create({
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password),
         otp:otplib.authenticator.generate(authKeys.secret_codes.otp_secret_key),
         verified:false,
+        registration_id:newUserTempRegisterationId(req.body.email),
         phone:req.body.phone,
         createdAt: db.sequelize.fn('NOW'),
         updatedAt: db.sequelize.fn('NOW'),
@@ -44,6 +48,9 @@ exports.register = function (req, res) {
         if (users) {
             console.log("\n registerd user on this awesome app" + JSON.stringify(users));
             //res.send(users);
+            //Create another mandatory tables
+            //todo: should be moved to stored procedure.
+            settingsOperation.createUserSetting(users.user_id);
             res.send({
                 "code": 200,
                 "message": "User registered sucessfully",
