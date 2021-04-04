@@ -1,6 +1,6 @@
 const { verifyAuthToken, verifyAuthSocketToken } = require('../middleware/auth');
 /* verifyAuthSocketToken:used for authentication of socket data. */
-const { check } = require('express-validator');
+const { check, oneOf } = require('express-validator');
 //check is used for getting the error: to set errors on response, validation is used in controller.
 var numClients = 0;
 
@@ -10,7 +10,7 @@ module.exports = function (app, io) {
     var settingController = require('../controller/settingController');
     var lookmateRegisterRoute = require('../controller/lookmateRegisterController');
     var googleAuthorization = require('../controller/googleAuth');
-    var generalMethods = require('../middleware/general.validators');
+    var generalMethods = require('../middleware/general.validators')
     var checkOTP = require('../controller/checkOTP');
     var lookmateMoreUserInfo = require('../controller/moreUserInfoController')
     var makeAppearance = require('../controller/addAppearance');
@@ -44,7 +44,7 @@ module.exports = function (app, io) {
     app.route('/auth/generateOTP').post(generalMethods.checkMobileOrEmail, checkOTP.generateOTP);
     app.route('/updatePassword').post(verifyAuthToken,updatePasswordController.updatePassword);
     //register more user info into the database.
-    app.route('/updateWelcomeDetails').post(verifyAuthToken, [check('nickName').isLength({ min: 4 }), check('birthYear').isLength({ min: 4 }), check('gender').isLength({ min: 1 }, { max: 1 })], lookmateMoreUserInfo.updateMoreInfo);
+    app.route('/updateWelcomeDetails').post(verifyAuthToken, oneOf([check('nickName').isLength({ min: 4 }), check('birthYear').isLength({ min: 1 }), check('gender').isLength({ min: 1 }, { max: 1 })]), lookmateMoreUserInfo.updateMoreInfo);
     //app.route('/auth/otp/').post(verifyAuthToken, checkOTP.verifyOTP);
     //below is for Mysql update of appearance which was commented because I was trying to implement the same with rabbitmq.
     //app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],makeAppearance.addAppearance);
@@ -53,9 +53,9 @@ module.exports = function (app, io) {
     app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],uploadImageToServer.uploadImageToServer,makeAppearance.addAppearance);
     //route for the comments 
     //todo:implement to concept of x-socket-id
-    app.route('/addComment').post(verifyAuthToken,[check('commentText').isLength({ min: 1 })],commentController.addComment);
+    app.route('/addComment').post(verifyAuthToken,[check('commentText').isLength({ min: 1 })],generalMethods.getAppearanceRelatedUserDetail,generalMethods.checkCommentLimitSetting,commentController.addComment);
     //todo:implement to concept of x-socket-id
-    app.route('/getComments/:apperanceId').get(verifyAuthToken,commentController.getLatestComment);
+    app.route('/getComments/:apperanceId').get(verifyAuthToken,generalMethods.checkIfAppearanceExists,commentController.getLatestComment);
     //upload user profile pic.
     //todo:delete it from folder if database failed to record the image in db, implement to concept of x-socket-id
     app.route('/uploadprofilepic').post(verifyAuthToken,uploadImageToServer.uploadImageToServer,updateProfilePicCode.updateProfilePicCode);
@@ -75,7 +75,7 @@ module.exports = function (app, io) {
     
     
     //POST get appearance with details using the appearacnce id., when user clicks and open a appearance.
-    app.route('/getAppearance').post(makeAppearance.getAppearance);
+    app.route('/getAppearance').post(verifyAuthToken,generalMethods.checkIfAppearanceExists,generalMethods.getAppearanceRelatedUserDetail,generalMethods.checkCommentLimitSetting, makeAppearance.getAppearance);
     //provide latest list of comments based on appearance id.
     app.route('/getPreviousComment').post(verifyAuthToken,commentController.getPreviousComment);
     
@@ -87,8 +87,8 @@ module.exports = function (app, io) {
     app.route('/getUnreadNotificationsCount').get(verifyAuthToken,notificationController.getUnreadNotificationCountFromDatabaseForUser)
     app.route('/markReadNotification').get(verifyAuthToken,notificationController.markReadAllNotificationFromDatabaseForUser)
 
-    //soft delete appearances
-    app.route('/deleteAppearance/:appearanceId').delete(verifyAuthToken,deleteAppearanceController.deleteAppearance);
+    //soft delete appearances  
+    app.route('/deleteAppearance/:appearanceId').delete(verifyAuthToken,generalMethods.checkIfAppearanceBelongsToDeleteUser,deleteAppearanceController.deleteAppearance);
     app.route('/submitRegistrationId').post(verifyAuthToken,lookmateLoginUserRoute.submitRegistrationId);
     /*todo: keep udpating the policy for the Socket URL update. 
     toinitialConnect:"connection" request:[token] response[error message]

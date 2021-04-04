@@ -13,7 +13,7 @@ var db = require('../database/connection');
 
  */
 
-exports.checkMobileOrEmail = function (req, res, next) {
+checkMobileOrEmail = function (req, res, next) {
     console.log("inside in validators--" + JSON.stringify(req.body));
     if (validator.isEmail(req.body.userid)) {
         //assign email parameter, the provided email id
@@ -38,7 +38,7 @@ exports.checkMobileOrEmail = function (req, res, next) {
 };
 
 /* todo:going forward take only a single setting, rather then providing the complete set */
-exports.checkUserAndGetEntitlements = function(req, res,next) {
+checkUserAndGetEntitlements = function(req, res,next) {
     console.log("\nReached to middleware :" +   req.params.user_id );
     if(req.params.user_id!=null){
         db.settings.findOne({
@@ -62,3 +62,116 @@ exports.checkUserAndGetEntitlements = function(req, res,next) {
         next();
     }
 };
+
+/* Special function for delete, we need to verify if this image belongs to this user only. */
+checkIfAppearanceBelongsToDeleteUser = function(req, res,next){
+    console.log("Got delete request to delete appearance id " +  req.params.appearanceId);
+    db.appearances.count({
+        attributes: ['appearance_id', 'picture'],
+        where: { 
+            appearance_id: req.params.appearanceId,
+            user_id: req.userDataFromToken.user_info.user_id },
+        include: [
+            {
+                attributes: ['registration_id', 'user_id'],
+                model: db.users
+            }
+        ]
+    }).then((count) => {
+        console.log("Count of records on delete:" + count);
+        if(count>=1)
+            next();
+    }).catch((error)=>{
+        /* image does not belong to this user */
+        res.send({
+            "code": 400,
+            "message": "server failed to delete image" + error
+        });
+    });
+}
+
+checkIfAppearanceExists = function (req,res,next) {
+    db.appearances.count({
+        attributes: ['appearance_id'],
+        where: { appearance_id: req.body.appearanceid || req.params.apperanceId}
+    }).then((response) => {
+        console.log("response:" + JSON.stringify(response));
+        if (response >= 1) {
+            next();
+        }
+        else {
+            throw new Error("No Appearance Found");
+        }
+    }).catch((error) => {
+        //todo:pass an error to UI here.
+        console.log("No appearance found" + error);
+        /* image does not belong to this user */
+        res.send({
+            "code": 400,
+            "message": "No Appearance found"
+        });
+    });
+}
+
+
+getAppearanceRelatedUserDetail = function (req, res, next) {
+    console.log("Appearance id in user details " + req.body.appearanceid);
+    db.appearances.findOne({
+        attributes: ['appearance_id', 'picture'],
+        where: { appearance_id: req.body.appearanceid },
+        include: [
+            {
+                attributes: ['registration_id', 'user_id'],
+                model: db.users
+            }
+        ]
+    }).then((response) => {
+        console.log("response:" + JSON.stringify(response));
+        if (response || response!=undefined) {
+            console.log("user for which comment has been made " + response.user.user_id);
+            req.params.user_id = response.user.user_id; 
+            req.params.registeration_id = response.user.registration_id;
+            req.params.picture = response.picture;
+            req.params.appearance_id = response.appearance_id;
+            checkUserAndGetEntitlements(req,res,next);
+        }
+        else {
+            throw new Error("error: No related user found")
+        }
+    }).catch((error) => {
+        //todo:pass an error to UI here.
+        console.log("Error in getting registeration id" + error);
+        /* image does not belong to this user */
+        res.send({
+            "code": 400,
+            "message": "server failed to open image"
+        });
+    });
+};
+
+
+/* check if user is not excedding the limit of comments set in the settings */
+checkCommentLimitSetting = async function(req, res, next){
+    db.comments.count({
+        where:{
+            appearance_id: req.body.appearanceid,
+            user_id: req.userDataFromToken.user_info.user_id
+        }
+    }).then(count=>{
+        //update req obj to send commentlimitleft in response, so that we can disable button on UI.
+        req.params.commentLimitLeft = (req.userEntitlements.maxCommentCountPerPerson - count); 
+        console.log("Comment Limit Left: " + req.params.commentLimitLeft);
+        //req.params.commentLimitLeft = 1;
+        next();   
+    });
+}
+
+
+module.exports = {
+    checkMobileOrEmail:checkMobileOrEmail,
+    checkUserAndGetEntitlements:checkUserAndGetEntitlements,
+    getAppearanceRelatedUserDetail:getAppearanceRelatedUserDetail,
+    checkCommentLimitSetting:checkCommentLimitSetting,
+    checkIfAppearanceBelongsToDeleteUser:checkIfAppearanceBelongsToDeleteUser,
+    checkIfAppearanceExists:checkIfAppearanceExists
+  };

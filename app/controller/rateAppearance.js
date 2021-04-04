@@ -100,7 +100,11 @@ exports.getRateAppearance = async function (req, res) {
         var responseRateAppearance=0;
         if(appearanceRate)
             var responseRateAppearance=appearanceRate.rate;
-
+        console.log("Return user rating:" + JSON.stringify({
+            "code": 200,
+            "rate": responseRateAppearance,
+        }) );
+        
         res.send({
             "code": 200,
             "rate": responseRateAppearance,

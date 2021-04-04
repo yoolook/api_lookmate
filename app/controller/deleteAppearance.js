@@ -1,5 +1,4 @@
-var Appearance = require('../models/Appearance');
-const Sequelize = require("sequelize");
+var db = require('../database/connection');
 //const publishToQueue = require('../database/connect-rabbitMQ');
 
 //configuration for pusher
@@ -28,33 +27,29 @@ Location:
 */
 //description: we are just soft deleting the appearance, so that it won't be visible on screen.
 exports.deleteAppearance = async function (req, res) {
-    Appearance.findOne({
+   /*  db.appearances.findOne({
         where: Sequelize.and({userid: req.userDataFromToken.user_info.user_id,},{appearance_id:req.params.appearanceId})        
-    }).then(appearanceHideVisibility => {
-        if (appearanceHideVisibility) {
-            appearanceHideVisibility.update({
-                visible:false
-            }).then( visiblityChanged => {
+    }) */
+
+    db.sequelize.query('CALL delete_appearance (:appearance_id)', 
+        {replacements: { appearance_id: req.params.appearanceId}})
+    .then(returnedProcResponse => {
+        if (returnedProcResponse) {
                 res.send({
                     "code": 200,
-                    "success": "user appearance deleted"
+                    "message": "user appearance deleted",
+                    "appearance_id":returnedProcResponse[0]["@appearance_id"] || req.params.appearanceId 
                 });
-            }).catch( visiblityChangeError => {
-                res.send({
-                    "code": 204,
-                    "failure": "Error in deleting the appearance"
-                });
-            });
         } else {
             res.send({
                 "code": 204,
-                "failure": "No such appearance or user exists"
+                "message": "No such appearance or user exists"
             });
         }
     }).catch(error => {
         res.send({
             "code": 400,
-            "failed": "server failed" + error
+            "message": "server failed" + error
         });
     });
 }

@@ -20,11 +20,11 @@ exports.verify = function (req, res) {
             //login and send back the response with jwt auth key.
             /* res.header("x-auth-token", db.users.generateAuthToken(result)).send({ */
             res.send({
-                "code": 201,
-                "message": "login sucessfull",
+                "code": 200,
+                "message": "google login success",
                 "user": result.nick_name,
                 "email": result.email,
-                "new_user": false,
+                "first_time_user":result.first_time_user,
                 "authorization": db.users.generateAuthToken(result),
                 "realReturn": JSON.stringify(result)
             });

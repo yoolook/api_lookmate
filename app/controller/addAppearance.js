@@ -89,8 +89,14 @@ exports.addAppearance = async function (req, res) {
             res.data = { "message-sent": true };
             res.send({
                 "code": 200,
-                "success": "user appearance made",
+                "message": "Appearance has been updated",
+                "reference":500, 
+                /* reference code is used to tell UI , which portion to update on profile page appearance 
+                500: is for appearance
+                600: is for profile picture*/
                 "user": appearanceMade.user_id,
+                "picture":appearanceMade.picture.toString(),
+                "appearance_id": appearanceMade.appearance_id.toString(),
                 "createdAt": appearanceMade.createdAt,
                 "updatedAt": appearanceMade.updatedAt,
             });
@@ -260,9 +266,11 @@ exports.getAppearance = async function (req, res) {
                 "nick_name":returnedAppearance.user.nick_name,
                 "user_id":returnedAppearance.user.user_id,
                 "lastProfilePicId":returnedAppearance.user.lastProfilePicId,
-                "picture_average_rate":returnedAppearance.lm_rate[0] //todo: for whatever reasons we are not able to get the rate_avg value directly, so sending object directly.
+                "picture_average_rate":returnedAppearance.lm_rate[0]?returnedAppearance.lm_rate[0]:0, //todo: for whatever reasons we are not able to get the rate_avg value directly, so sending object directly.
+                "isCommentLimitOver":req.params.commentLimitLeft <=0 ? true : false
             }
-        console.log("\n Returned from screnee " + JSON.stringify(returnedAppearance));    
+            /*picture_average_rate: it should be of one digit value currently its like 2.0000  */
+        console.log("\n Returned from scren ee " + JSON.stringify(returnedAppearance));    
         res.send(returnedAppearance);
     }).catch(error => {
         console.log("Error in get the condition: " + JSON.stringify(error));
@@ -280,8 +288,7 @@ exports.confirmIfAppearanceBelongsToTheUser =  function(appearance_id,requestedU
         attributes:['appearance_id','picture','location','createdAt','caption','anonymity','user_id'],
         where: db.sequelize.and({appearance_id: appearance_id, user_id:requestedUser})
     }).then((returnAppearance)=>{
-        console.log("response:" + JSON.stringify(returnAppearance.appearance_id) + typeof returnAppearance);
-        if(typeof returnAppearance == "object" && returnAppearance.appearance_id==appearance_id)
+        if(returnAppearance && typeof returnAppearance == "object" && returnAppearance.appearance_id==appearance_id)
             return true;
         else
             return false;

@@ -37,6 +37,11 @@ exports.updateProfilePicCode = async function (req, res) {
                 res.send({
                     "code": 200,
                     "picture": users.lastProfilePicId,
+                    "message": "profile picture has been updated",
+                    "reference":600, 
+                /* reference code is used to tell UI , which portion to update on profile page appearance 
+                500: is for appearance
+                600: is for profile picture*/
                     "authorization": db.users.generateAuthToken(users)
                 });
             });

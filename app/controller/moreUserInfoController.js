@@ -10,6 +10,8 @@ exports.updateMoreInfo = async function(req,res){
         console.log("validation error " + JSON.stringify(errors.array()));
         return res.status(502).json({ errors: errors.array() });
     }
+    const unitConversionYearsArr = [1985, 1990, 1995, 2000, 2005];
+
     await db.users.findOne({
         where: {user_id: req.userDataFromToken.user_info.user_id}
     }).then(
@@ -18,7 +20,7 @@ exports.updateMoreInfo = async function(req,res){
                 //todo[urgent]: make its user id get from token, and  resolve birth_year_range issue.
                 user.update({
                     nick_name:req.body.nickName,
-                    birth_year_range:req.body.birthYear,
+                    birth_year_range:unitConversionYearsArr[req.body.birthYear],
                     gender:req.body.gender,
                     first_time_user:false
                 }).then(users => {
@@ -70,7 +72,7 @@ exports.getUserInformation = async function (req,res){
                 gender:responseUserInfo["gender"],
                 birthYear:responseUserInfo["birth_year_range"],
                 //already know about this, it wo'nt return profile_picture in any case, and it is not required as well.
-                profile_picture:(req.userEntitlements && req.userEntitlements.profilePictureVisibility == 2) ? responseUserInfo["lastProfilePicId"] : "NOACCESS"
+                profile_picture:(req.userEntitlements && req.userEntitlements.profilePictureVisibility == 1) ? "NOACCESS" : responseUserInfo["lastProfilePicId"]
             }
             console.log("Sending user information :" + JSON.stringify(entitlementResponse));
             res.send({
