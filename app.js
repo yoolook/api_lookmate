@@ -13,6 +13,8 @@ app.use('/images', express.static(__dirname + '/Images'));
 app.use('/thumbnails', express.static(__dirname + '/Thumbnails'));
 app.use('/profileimages', express.static(__dirname + '/ProfileImages'));
 
+
+
 var db = require('./app/database/connection');
 
 // parse application/x-www-form-urlencoded
@@ -33,12 +35,16 @@ var io        =     require("socket.io")(http); */
 var socket = require("socket.io")
 var server = app.listen(port,"0.0.0.0");
 var io= socket(server);
+var cors = require('cors');
+app.use(cors());
 
 routes(app, io); //register the route  */
 
 app.get("/",function(req,res){
   res.sendFile(__dirname + '/socketCheck.html');
 });
+
+
 
 console.log('Lookmate server is running on: ' + port);
 

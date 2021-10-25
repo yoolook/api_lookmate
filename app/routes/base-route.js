@@ -22,9 +22,11 @@ module.exports = function (app, io) {
     var stalkUserController = require('../controller/stalkUser');
     var updatePasswordController = require('../controller/updatePassword');
     var checkUserExists = require('../controller/checkUserExist');
+    var appearanceInfoDesktop = require('../controller/desktopAppearanceDetails');
     //delete imports
     var deleteAppearanceController = require('../controller/deleteAppearance');
-    var customValidation = require('../middleware/custom-validators')
+    var customValidation = require('../middleware/custom-validators');
+    
     //for testing purpose
     app.route('/test').get(testRouteController.testroutes);
     //Silient login here.
@@ -100,7 +102,11 @@ module.exports = function (app, io) {
     app.route('/getOtherUsersEntitlements').post(verifyAuthToken,generalMethods.checkUserAndGetEntitlements,settingController.getOtherUsersEntitlements);
     app.route('/setUserSettings').post(verifyAuthToken,[check('setValue').isLength({ min: 1 }),check('setValue').custom(customValidation.authorizedSettings)],settingController.setUserSettings);
     
-   //for testing purpose
+    //Risky API's from desktop:
+    app.route(`/getDesktopDetails/:pictureId`).get(generalMethods.checkIfAppearanceExists,appearanceInfoDesktop.getDesktopRelatedAppearanceDetails);
+    //anyone can changes the user identifier from postman and submit the request many times.
+    app.route('/addOpenComment').post([check('commentText').isLength({ min: 1 })],generalMethods.mapPictureIdToAppearanceId,generalMethods.getAppearanceRelatedUserDetail,generalMethods.checkOpenCommentLimitSetting,commentController.addComment);
+    //for testing purpose
    //app.route('/testcustomcheck').post([check('image').isImage()],function(){ console.log("function executed")});
 
 

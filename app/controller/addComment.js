@@ -5,6 +5,7 @@ var notificationController = require ('./notification');
 const firebaseRef = require("../database/firebase_db")
 var messageHelper = require('../helper/notificationMessages')
 var adminConfig = require('../../config/adminConf');
+
 /* @description; This add appearance in the database using API whereas above add it using socket, we need:
 1. picture(s) URL: in the form of array.
 2. caption: one caption of image.
@@ -52,11 +53,24 @@ exports.addComment = async function (req, res) {
 };
 
 addCommentToDb = async function (req, res) {
+    //todo:req.body.user_id is risky here, as any user can add this in body request payload and modify the user name.
+    // Secure it in a more robust way, check Ip or other thigns, verify them and then allow here.
+    var user = {};
+    if (req.headers.useridentifier) {
+        user = {
+            ip_address: req.headers.useridentifier, //todo: change column name to uuid;
+            user_id: adminConfig.lookmate_official_unknown_user //currently used as lookmate unidentified user
+        };
+    } else {
+        user = { user_id: req.userDataFromToken.user_info.user_id };
+    }
+
+    console.log("------user going in is", user);
     db.comments.create({
         comment: req.body.commentText,
         location: req.body.location,
         appearance_id: req.body.appearanceid,
-        user_id: req.userDataFromToken.user_info.user_id,
+        ...user,
         reply_com_id: req.body.reply_com_id, //replyToCommentId should be 0 if its a first comment.
         last_conv_comment: true,
         annonymous: true, //currently all comments are anonymous only.| get this from parameter once you create a UI for the same.
@@ -67,9 +81,10 @@ addCommentToDb = async function (req, res) {
         console.log("comment added in the pocket:" + JSON.stringify(commentAdded));
         console.log("User pocket:" + req.params.user_id);
         if (commentAdded) {
-            if(req.params.registeration_id && req.params.user_id ){
+            if (req.params.registeration_id && req.params.user_id) {
                 //Creating notification (for firebase) which sent it to the user for which it is commented for.
-                var message = messageHelper.notificationMessage(req.userDataFromToken.user_info.nick_name,"COMMENT",{picture:adminConfig.internet_appearance_thumbnail_location + req.params.picture,appearanceid:req.params.appearance_id})
+                var commentorUser = req.userDataFromToken ? req.userDataFromToken.user_info.nick_name : adminConfig.unknown_lookmate_username;
+                var message = messageHelper.notificationMessage(commentorUser, "COMMENT", { picture: adminConfig.internet_appearance_thumbnail_location + req.params.picture, appearanceid: req.params.appearance_id })
                 //Sending to the firebase push notifacation FCM.
                 firebaseRef.firebaseAdmin.messaging().sendToDevice(req.params.registeration_id, message)
                     .then((response) => {
@@ -81,13 +96,13 @@ addCommentToDb = async function (req, res) {
                     });
                 //Update notification to DB as well, if its successfull,no need for its promise as of now, its fine without it.
                 //todo: arrange these three methods in some fashion, all the 2 above and 1 below. currently calling asyncronously.
-                notificationController.setNotificationIntoDatabaseForUser(req.params.user_id,message).then(returnNotificationAdded=>{
+                notificationController.setNotificationIntoDatabaseForUser(req.params.user_id, message).then(returnNotificationAdded => {
                     console.log("\nDatabase Updated with notification")
-                }).catch((error)=>{
+                }).catch((error) => {
                     console.log("\nError in adding notification to the database" + error);
                 })
             }
-            else{
+            else {
                 console.log("Error in getting registeration id" + error);
             }
             //---if all goes well then send back the success requestion.
@@ -97,18 +112,18 @@ addCommentToDb = async function (req, res) {
                 "code": 200,
                 "message": "Comment submitted",
                 // -1 for the current updated comment.
-                "isCommentLimitOver":(req.params.commentLimitLeft -1 ) <=0 ? true : false,
+                "isCommentLimitOver": (req.params.commentLimitLeft - 1) <= 0 ? true : false,
                 "createdAt": commentAdded.createdAt
             });
         } else {
-            console.log("error 104:" + error );
+            console.log("error 104:" + error);
             res.send({
                 "code": 204,
                 "message": "Error in adding comment"
             });
         }
     }).catch(error => {
-        console.log("error 110:" + error );
+        console.log("error 110:" + error);
         res.send({
             "code": 400,
             "message": "server failed" + error

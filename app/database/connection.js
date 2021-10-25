@@ -22,6 +22,12 @@ const sequelize = new Sequelize("lookmate", "root", "lookmate@123", {
   dialect: "mysql"
 });
 
+/* const sequelize = new Sequelize("lookmate", "root", "lookmate@123", {
+  host: "0.0.0.0:3307",
+  dialect: "mysql"
+}); */
+
+
 /* module.exports = sequelize;
 global.sequelize = sequelize; */
 

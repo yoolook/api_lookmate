@@ -59,7 +59,11 @@ module.exports = (sequelize, DataTypes) => {
             field: 'updated_at',
             type: DataTypes.DATE,
             allowNull: false
-        }
+        },
+        ip_address: {
+            type: DataTypes.STRING(60),
+            allowNull: true,
+        },
     });
     return Comments;
 }

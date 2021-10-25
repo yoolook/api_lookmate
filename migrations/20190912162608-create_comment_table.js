@@ -56,6 +56,10 @@ module.exports = {
         type: Sequelize.DATE,
         allowNull: false,
        // defaultValue: Sequelize.literal('CURRENT_TIMESTAMP')
+      },
+      ip_address: {
+        type: Sequelize.STRING(60),
+        allowNull: true
       }
     });
   },

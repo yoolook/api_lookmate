@@ -1,6 +1,9 @@
 
 var validator = require('validator');
 var db = require('../database/connection');
+var requestParamFormatter = require('../helper/requestParamFormatter');
+var adminConfig = require('../../config/adminConf');
+var requestIp = require('request-ip');
 /**
  * Check if provided value is mobile or email. if not from both, return 400 back to the user.
  * !partial implementation: these values are used in register controller.
@@ -90,10 +93,44 @@ checkIfAppearanceBelongsToDeleteUser = function(req, res,next){
     });
 }
 
-checkIfAppearanceExists = function (req,res,next) {
+mapPictureIdToAppearanceId = function (req, res, next) {
+    console.log("Appearance picture ID:", req.body);
+    db.appearances.findOne({
+        attributes: ['appearance_id'],
+        where: { picture: requestParamFormatter.APPEARANCE_NAME_FORMAT(req.body.pictureId) }
+    }).then((response) => {
+        if (response) {
+            console.log("Fetched Response", response);
+            req.body.appearanceid = response.appearance_id
+            next();
+        }
+        else {
+            throw new Error("No Appearance Found for mapping");
+        }
+    }).catch((error) => {
+        //todo:pass an error to UI here.
+        /* image does not belong to this user */
+        res.send({
+            "code": 400,
+            "message": "No Appearance found for mapping"
+        });
+    });
+}
+
+checkIfAppearanceExists = function (req, res, next) {
+    var whereMarker;
+    if (req.params && req.params.pictureId) {
+        console.log("picture Id:",requestParamFormatter.APPEARANCE_NAME_FORMAT(req.params.pictureId));
+        whereMarker = { picture: requestParamFormatter.APPEARANCE_NAME_FORMAT(req.params.pictureId) }
+        //modify param now, once it is validated.
+        req.params.pictureId = requestParamFormatter.APPEARANCE_NAME_FORMAT(req.params.pictureId);
+        
+    }
+    else
+        whereMarker = { appearance_id: req.body.appearanceid || req.params.apperanceId }
     db.appearances.count({
         attributes: ['appearance_id'],
-        where: { appearance_id: req.body.appearanceid || req.params.apperanceId}
+        where: whereMarker
     }).then((response) => {
         console.log("response:" + JSON.stringify(response));
         if (response >= 1) {
@@ -118,7 +155,7 @@ getAppearanceRelatedUserDetail = function (req, res, next) {
     console.log("Appearance id in user details " + req.body.appearanceid);
     db.appearances.findOne({
         attributes: ['appearance_id', 'picture'],
-        where: { appearance_id: req.body.appearanceid },
+        where: { appearance_id: req.body.appearanceid},
         include: [
             {
                 attributes: ['registration_id', 'user_id'],
@@ -166,6 +203,38 @@ checkCommentLimitSetting = async function(req, res, next){
     });
 }
 
+// inside middleware handler- can use to get ip address of the user and save it in the database.
+trackIpAddressForOpenRequests = function(req, res, next) {
+    req.body.user_id = requestIp.getClientIp(req); 
+    console.log("userId now is",req.body.user_id);
+    next();
+};
+
+/* check if user is not excedding the limit of comments set in the settings in case of open comments with IP address*/
+checkOpenCommentLimitSetting = async function(req, res, next){
+    console.log("User Identifier:",req.headers.useridentifier);
+    db.comments.count({
+        where:{
+            appearance_id: req.body.appearanceid,
+            ip_address: req.headers.useridentifier
+        }
+    }).then(count=>{
+        //update req obj to send commentlimitleft in response, so that we can disable button on UI.
+        req.params.commentLimitLeft = adminConfig.openCommentsLimit-count; 
+        
+        console.log("Comment Limit Left: " + req.params.commentLimitLeft);
+        
+        //req.params.commentLimitLeft = 1;
+        next();   
+    }).catch((error) => {
+        res.send({
+            "code": 400,
+            "message": "Not allowed to comment now."
+        });
+    });
+}
+
+
 
 module.exports = {
     checkMobileOrEmail:checkMobileOrEmail,
@@ -173,5 +242,8 @@ module.exports = {
     getAppearanceRelatedUserDetail:getAppearanceRelatedUserDetail,
     checkCommentLimitSetting:checkCommentLimitSetting,
     checkIfAppearanceBelongsToDeleteUser:checkIfAppearanceBelongsToDeleteUser,
-    checkIfAppearanceExists:checkIfAppearanceExists
+    checkIfAppearanceExists:checkIfAppearanceExists,
+    mapPictureIdToAppearanceId:mapPictureIdToAppearanceId,
+    trackIpAddressForOpenRequests:trackIpAddressForOpenRequests,
+    checkOpenCommentLimitSetting:checkOpenCommentLimitSetting
   };

@@ -9,5 +9,8 @@ module.exports = {
     'profile_image_file_count':1,
     'profile_image_location':'./ProfileImages',
     'uniqueImageCode':'lookmateImage',
-    'authorizedSettingValues':["profileVisibleTo","profilePictureVisibility","strictlyAnonymous","notificationScreen","notification_sms"]
+    'authorizedSettingValues':["profileVisibleTo","profilePictureVisibility","strictlyAnonymous","notificationScreen","notification_sms"],
+    'openCommentsLimit':1,
+    'lookmate_official_unknown_user':28,
+    'unknown_lookmate_username': "LookmateUser"
 }
