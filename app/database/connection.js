@@ -1,44 +1,20 @@
-/* const Sequelize = require("sequelize");
-
-const sequelize = new Sequelize("lookmate", "root", "lookmate@123", {
-  host: "127.0.0.1",
-  dialect: "mysql"
-});
-
-module.exports = sequelize;
-global.sequelize = sequelize;   */
 'use strict'
-//const Sequelize = require('sequelize');  
-//require('dotenv').config({path: 'yourfile.env'})
-
-//console.log(process.env.DATABASE_NAME) 
-
-//const env = require('./env');  
-
 const Sequelize = require("sequelize");
+const dbConfig = require("../../config/config");
 
-const sequelize = new Sequelize("lookmate", "root", "lookmate@123", {
-  host: "127.0.0.1",
-  dialect: "mysql"
-});
+const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
+  host: dbConfig.HOST,
+  dialect: dbConfig.dialect,
+  port: dbConfig.port,
+  operatorsAliases: false,
 
-/* const sequelize = new Sequelize("lookmate", "root", "lookmate@123", {
-  host: "0.0.0.0:3307",
-  dialect: "mysql"
-}); */
-
-
-/* module.exports = sequelize;
-global.sequelize = sequelize; */
-
-/* const sequelize = new Sequelize(env.DATABASE_NAME, env.DATABASE_USERNAME, env.DATABASE_PASSWORD, {  
-  host: env.DATABASE_HOST,
-  port: env.DATABASE_PORT,
-  dialect: env.DATABASE_DIALECT,
-  define: {
-    underscored: true
+  pool: {
+    max: dbConfig.pool.max,
+    min: dbConfig.pool.min,
+    acquire: dbConfig.pool.acquire,
+    idle: dbConfig.pool.idle
   }
-}); */
+});
 // Connect all the models/tables in the database to a db object, 
 //so everything is accessible via one object
 const db = {};
@@ -85,7 +61,6 @@ db.users.hasMany(db.notifications, { as: "lm_notification_user",foreignKey: 'use
 //for notifications and appearance.
 db.notifications.belongsTo(db.appearances, { foreignKey: 'appearance_id',targetKey: 'appearance_id' }); 
 //db.appearances.hasMany(db.notifications, { as: "lm_notification_user",foreignKey: 'user_id' , targetKey: 'user_id'});
-
 
 module.exports = db;  
 

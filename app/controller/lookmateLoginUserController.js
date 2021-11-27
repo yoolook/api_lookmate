@@ -64,7 +64,7 @@ exports.login = async function (req, res) {
         var responseObject={
             returnType:"Error", //could be error or success.
             code:402,
-            message:"Catch from login process"
+            message:"Catch from login process" + error
         }
         res.status(402).send(responseObject)
     });
