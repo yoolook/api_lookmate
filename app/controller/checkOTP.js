@@ -11,8 +11,10 @@ var db = require('../database/connection');
 
 // Alternatively: const secret = otplib.authenticator.generateSecret();
 exports.verifyOTP = async function (req, res) {
+    console.log("--Inside OTP validation--");
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
+        console.log("--OTP error--");
         var responseObject = {
             returnType: "Error", //could be error or success.
             code: 502,
@@ -26,7 +28,7 @@ exports.verifyOTP = async function (req, res) {
     console.log("\n\nbefore findone verification of OTP ----" + JSON.stringify(req.body));
     await db.users.findOne({
         attributes: ['user_id', 'otp', 'verified'],
-        where: db.sequelize.or({ user_id: req.userDataFromToken.user_info.user_id})
+        where: db.sequelize.or({ email: req.body.userid }, { phone: req.body.userid })
     }).then(
         (user) => {
             console.log("\n\nInternal verification of OTP ----" + JSON.stringify(user));

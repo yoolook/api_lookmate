@@ -4,11 +4,15 @@ const Sequelize = require("sequelize");
 var db = require('../database/connection')
 
 exports.updateMoreInfo = async function(req,res){
-    console.log("\n\n--inside update info----" + JSON.stringify(req.body));
     const errors = validationResult(req);
     if (!errors.isEmpty()) {
-        console.log("validation error " + JSON.stringify(errors.array()));
-        return res.status(502).json({ errors: errors.array() });
+        var responseObject={
+            returnType:"Error", //could be error or success.
+            code:201,
+            message:"Please fill all the details. You can skip this as well",
+            realReturn:JSON.stringify(errors)
+        }
+        return res.status(201).send(responseObject);
     }
     const unitConversionYearsArr = [1985, 1990, 1995, 2000, 2005];
 
@@ -17,7 +21,7 @@ exports.updateMoreInfo = async function(req,res){
     }).then(
          (user) => {
             if(user){
-                //todo[urgent]: make its user id get from token, and  resolve birth_year_range issue.
+                //todo[urgent]: make its user id get from token, and resolve birth_year_range issue.
                 user.update({
                     nick_name:req.body.nickName,
                     birth_year_range:unitConversionYearsArr[req.body.birthYear],

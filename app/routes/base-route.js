@@ -40,13 +40,13 @@ module.exports = function (app, io) {
     app.route('/checkUserExists').post([check('userid').isLength({ min: 4 })],generalMethods.checkMobileOrEmail,checkUserExists.checkEmailorMobileExists)
     //google related URL's.
     app.route('/auth/google/').get(googleAuthorization.verify);
-    //Verify OTP of the user second stage of the application
-    app.route('/auth/otp/').post(verifyAuthToken,checkOTP.verifyOTP);
+    //Verify OTP of the user second stage of the application - removed verification method from OTP section.
+    app.route('/auth/otp').post(generalMethods.checkMobileOrEmail,checkOTP.verifyOTP);
     //Generate OTP and feed that in database API.
     app.route('/auth/generateOTP').post(generalMethods.checkMobileOrEmail, checkOTP.generateOTP);
     app.route('/updatePassword').post(verifyAuthToken,updatePasswordController.updatePassword);
     //register more user info into the database.
-    app.route('/updateWelcomeDetails').post(verifyAuthToken, oneOf([check('nickName').isLength({ min: 4 }), check('birthYear').isLength({ min: 1 }), check('gender').isLength({ min: 1 }, { max: 1 })]), lookmateMoreUserInfo.updateMoreInfo);
+    app.route('/updateWelcomeDetails').post(verifyAuthToken,[check('nickName').isLength({ min: 4 },{ max: 12 }), check('birthYear').isLength({ min: 1 }), check('gender').isLength({ min: 1 }, { max: 1 })], lookmateMoreUserInfo.updateMoreInfo);
     //app.route('/auth/otp/').post(verifyAuthToken, checkOTP.verifyOTP);
     //below is for Mysql update of appearance which was commented because I was trying to implement the same with rabbitmq.
     //app.route('/addAppearance').post(verifyAuthToken,[check('picture').isLength({ min: 1 }),check('caption').isLength({ min: 1 })],makeAppearance.addAppearance);
