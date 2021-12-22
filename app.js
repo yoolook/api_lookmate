@@ -1,6 +1,8 @@
 var express    = require('express');
 var bodyParser = require('body-parser');
 require('dotenv').config({path: './lookmate.env'})
+var adminConfig = require('./config/adminConf');
+var fs = require('fs');
 var http = require('http'); //only required when operating HTML from here , 
 //I used it only for socket purpose when testing it with client htmk on local browser.
 //var db = require('./app/models/db');
@@ -8,9 +10,23 @@ port = process.env.PORT || 3000;
 var app = express();
 //opening Images and thumbnail folder to whole world.
 //todo: Use some strategy to limit the access to this folder and deliver the image through some script.
-app.use('/images', express.static(__dirname + '/Images'));
-app.use('/thumbnails', express.static(__dirname + '/Thumbnails'));
-app.use('/profileimages', express.static(__dirname + '/ProfileImages'));
+
+//creating directory if not present.
+if (!fs.existsSync(adminConfig.appearance_location)){
+    fs.mkdirSync(adminConfig.appearance_location);
+}
+
+if (!fs.existsSync(adminConfig.appearance_thumbnail_location)){
+  fs.mkdirSync(adminConfig.appearance_thumbnail_location);
+}
+
+if (!fs.existsSync(adminConfig.profile_image_location)){
+  fs.mkdirSync(adminConfig.profile_image_location);
+}
+
+app.use('/images', express.static(__dirname + adminConfig.appearance_location.replace(".", "")));
+app.use('/thumbnails', express.static(__dirname +  adminConfig.appearance_thumbnail_location.replace(".", "")));
+app.use('/profileimages', express.static(__dirname + adminConfig.profile_image_location.replace(".", "")));
 var db = require('./app/database/connection');
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: false }))
