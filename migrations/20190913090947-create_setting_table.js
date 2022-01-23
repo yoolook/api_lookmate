@@ -31,7 +31,7 @@ module.exports = {
         type: Sequelize.INTEGER(2),
         allowNull: false,
         defaultValue: 1
-      }
+      },
       strictlyAnonymous: {
         type: Sequelize.BOOLEAN,
         allowNull: false,
