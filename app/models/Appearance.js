@@ -39,6 +39,11 @@ const Appearance = sequelize.define("appearances", {
     allowNull: false,
     defaultValue: true
   },
+  public:{
+    type: DataTypes.BOOLEAN,
+    allowNull: false,
+    defaultValue: false
+  },
   user_id: {
     type: DataTypes.INTEGER(11),
     allowNull: false,

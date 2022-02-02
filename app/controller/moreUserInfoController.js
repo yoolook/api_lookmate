@@ -26,6 +26,7 @@ exports.updateMoreInfo = async function(req,res){
                     nick_name:req.body.nickName,
                     birth_year_range:unitConversionYearsArr[req.body.birthYear],
                     gender:req.body.gender,
+                    bio:req.body.bio,
                     first_time_user:false
                 }).then(users => {
                     res.send({
@@ -67,7 +68,7 @@ exports.updateMoreInfo = async function(req,res){
 exports.getUserInformation = async function (req,res){
     /* todo: In future, entitlement needs to be matched with user id, get that from the default req and match, its easy but no need as of now, as settings are just private and public */
         await db.users.findOne({
-            attributes:["nick_name","lastProfilePicId","gender","birth_year_range"],
+            attributes:["nick_name","lastProfilePicId","gender","birth_year_range","bio"],
             //if entitlement is not set, then get user own information to use it in settings.
             where: {user_id: req.userEntitlements ? req.params.user_id : req.userDataFromToken.user_info.user_id}
         }).then((responseUserInfo) => {
@@ -75,6 +76,7 @@ exports.getUserInformation = async function (req,res){
                 nickName:responseUserInfo["nick_name"],
                 gender:responseUserInfo["gender"],
                 birthYear:responseUserInfo["birth_year_range"],
+                bio:responseUserInfo["bio"],
                 //already know about this, it wo'nt return profile_picture in any case, and it is not required as well.
                 profile_picture:(req.userEntitlements && req.userEntitlements.profilePictureVisibility == 1) ? "NOACCESS" : responseUserInfo["lastProfilePicId"]
             }

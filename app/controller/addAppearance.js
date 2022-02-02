@@ -54,38 +54,40 @@ Location:
 */
 
 exports.addAppearance = async function (req, res) {
-    console.log("\n anonymite " + req.body.anonymity)
     db.appearances.create({
         picture: (req.body.picture).toString(),
         caption: req.body.caption,
         location: req.body.location,
         anonymity: req.body.anonymity,
+        public:req.body.publicImage,
         user_id: req.userDataFromToken.user_info.user_id,
         /*  created_at: db.sequelize.fn('NOW'),
          updated_at: db.sequelize.fn('NOW'), */
     }).then(appearanceMade => {
         if (appearanceMade) {
             /* preparing data for pushing appearance to the user. */
-            var appearanceToBlink = {
-                data: {
-                    picture: appearanceMade.picture.toString(),
-                    appearance_id: appearanceMade.appearance_id.toString()
-                },
-                topic: feedAppearanceTopic
-            };
-            // Send a message to devices subscribed to the provided topic.
-            firebaseRef.firebaseAdmin.messaging().send(appearanceToBlink)
-                .then((appearanceMade) => {
-                    // Response is a message ID string.
-                    console.log('Successfully sent message:', appearanceMade);
+            if(appearanceMade.public){
+                var appearanceToBlink = {
+                    data: {
+                        picture: appearanceMade.picture.toString(),
+                        appearance_id: appearanceMade.appearance_id.toString()
+                    },
+                    topic: feedAppearanceTopic
+                };
+                // Send a message to devices subscribed to the provided topic.
+                firebaseRef.firebaseAdmin.messaging().send(appearanceToBlink)
+                    .then((appearanceMade) => {
+                        // Response is a message ID string.
+                        console.log('Successfully sent message:', appearanceMade);
 
-                })
-                .catch((error) => {
-                    console.log('Error sending message:', error);
-                })
-                .finally((done) => {
-                    console.log("it's done");
-                });
+                    })
+                    .catch((error) => {
+                        console.log('Error sending message:', error);
+                    })
+                    .finally((done) => {
+                        console.log("it's done");
+                    });
+            }
             res.data = { "message-sent": true };
             res.send({
                 "code": 200,
@@ -131,6 +133,7 @@ exports.getLatestAppearance = async function (req, res) {
             }
         ], */
         limit: 30, 
+        where: db.sequelize.and({visible: 1, public: 1}),
         order: [['createdAt', 'DESC']]
     }).then((results)=>{
         /* converting the results to the contract format.

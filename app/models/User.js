@@ -43,6 +43,11 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.BOOLEAN,
       allowNull: false
     },
+    bio: {
+      type: DataTypes.STRING(100),
+      allowNull: false,
+      defaultValue:"I am on lookmate now."
+    },
     birth_year_range: {
       type: DataTypes.INTEGER(8),
       allowNull: true
