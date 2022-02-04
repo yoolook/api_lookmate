@@ -1,6 +1,6 @@
 module.exports = {
     'accepted_extensions_of_image': ['jpg', 'png', 'gif'],
-    'appearance_file_upload_size':  1 * 1024 * 1024,  // 2 MB upload limit
+    'appearance_file_upload_size':  10 * 1024 * 1024,  // 10 MB upload limit
     'appearance_file_upload_count':10,
     'appearance_location': './Images',
     'appearance_thumbnail_location': './Thumbnails',
