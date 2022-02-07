@@ -87,7 +87,7 @@ module.exports = function (app, io) {
     //notification API's
     app.route('/getLatestNotifications').get(verifyAuthToken,notificationController.getLatestNotificationFromDatabaseForUser)
     app.route('/getUnreadNotificationsCount').get(verifyAuthToken,notificationController.getUnreadNotificationCountFromDatabaseForUser)
-    app.route('/markReadNotification').get(verifyAuthToken,notificationController.markReadAllNotificationFromDatabaseForUser)
+    app.route('/markReadNotification/:notification_id').get(verifyAuthToken,check('notification_id').exists().isInt(),notificationController.markReadAllNotificationFromDatabaseForUser)
 
     //soft delete appearances  
     app.route('/deleteAppearance/:appearanceId').delete(verifyAuthToken,generalMethods.checkIfAppearanceBelongsToDeleteUser,deleteAppearanceController.deleteAppearance);

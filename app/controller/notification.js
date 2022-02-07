@@ -1,5 +1,6 @@
 var authKeys = require('../../config/auth');
 var db = require('../database/connection');
+const { validationResult } = require('express-validator');
 /* notification object should have
 {
     notification: {
@@ -94,8 +95,15 @@ exports.getUnreadNotificationCountFromDatabaseForUser = function (req,res) {
 @prerequisit: User should be authenticated with token and get id from the token in req
 */
 exports.markReadAllNotificationFromDatabaseForUser = function (req,res) {
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+        return res.status(400).send({
+            "code": 400,
+            "message": "Marking read failed"
+        });
+    }
     db.notifications.update({ read : true },{ 
-        returning: true, where: db.sequelize.and({ user_id:req.userDataFromToken.user_info.user_id, read:false})
+        returning: true, where: db.sequelize.and({ user_id:req.userDataFromToken.user_info.user_id, notification_id:req.params.notification_id, read:false})
     }).then(notificationReturn => {
         res.send({
             "code": 200,
