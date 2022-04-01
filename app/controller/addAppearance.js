@@ -132,7 +132,7 @@ exports.getLatestAppearance = async function (req, res) {
                 model: db.users
             }
         ], */
-        limit: 30, 
+        limit: 40, 
         where: db.sequelize.and({visible: 1, public: 1}),
         order: [['createdAt', 'DESC']]
     }).then((results)=>{
@@ -169,7 +169,7 @@ exports.getUserLatestAppearance = async function (req, res) {
         db.appearances.findAll({ 
             attributes:['appearance_id','picture','location','createdAt','user_id'],
             where: { user_id:requestedUser},
-            limit: 30, 
+            limit: 40, 
             order: [['createdAt', 'DESC']]
         }).then((results)=>{
             /* converting the results to the contract format.
