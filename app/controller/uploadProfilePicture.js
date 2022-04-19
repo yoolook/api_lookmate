@@ -1,8 +1,9 @@
 var db = require('../database/connection');
 const { validationResult } = require('express-validator');
-const Sequelize = require("sequelize");
 const fs = require('fs');
 var adminConfig = require('../../config/adminConf');
+const infoMessages = require("../../config/info-messages");
+const logger = require("../../logger");
 
 // Alternatively: const secret = otplib.authenticator.generateSecret();
 exports.updateProfilePicCode = async function (req, res) {
@@ -17,7 +18,6 @@ exports.updateProfilePicCode = async function (req, res) {
         where: { user_id: req.userDataFromToken.user_info.user_id }
     }).then(
         (user) => {
-            console.log("photo search " + JSON.stringify(user));
             /* remove already existing image from the configured profile image folder. why here..?
             because, we want to call db only once, and this is the only place where controller is called ForeignKeyConstraintError, its worth to call fs and unlink fileURLToPath */
             if (user.lastProfilePicId) {
@@ -30,14 +30,13 @@ exports.updateProfilePicCode = async function (req, res) {
             user.update({
                 lastProfilePicId: (req.body.picture).toString()
             }).then(users => {
-                console.log("\nUploaded user iamge:" + JSON.stringify(users));
                 /* todo: confirm the authorization parameter is correctly implemented on front end.
                 implement authorization for other requests as well, there are a lot of them which 
                 do not have this implementation. */
                 res.send({
                     "code": 200,
                     "picture": users.lastProfilePicId,
-                    "message": "profile picture has been updated",
+                    "message": infoMessages.SUCCESS_PROFILE_PICTURE_UPDATED,
                     "reference":600, 
                 /* reference code is used to tell UI , which portion to update on profile page appearance 
                 500: is for appearance
@@ -46,10 +45,10 @@ exports.updateProfilePicCode = async function (req, res) {
                 });
             });
         }).catch(error => {
-            console.log("Error: " + error);
+            logger.error(infoMessages.ERROR_GENERAL_CATCH + " [ Updated Profile Picture ] : " + error, { service : "upPrPic-*c1" })
             res.send({
                 "code": 400,
-                "failed": "Error in profile picture upload" + error
+                "failed": infoMessages.ERROR_GENERAL_CATCH
             });
         });
 }

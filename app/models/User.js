@@ -1,6 +1,7 @@
- const Sequelize = require("sequelize");
+const Sequelize = require("sequelize");
 const jwt = require('jsonwebtoken');
-var authKeys = require('../../config/auth'); 
+var authKeys = require('../../config/auth');
+const logger = require("../../logger");
 //var db = require('./db')
 //const Appearance = require('../models/Appearance')
 module.exports = (sequelize, DataTypes) => {
@@ -69,7 +70,7 @@ module.exports = (sequelize, DataTypes) => {
   User.generateAuthToken = function (user_info) {
     //const accesstoken = jwt.sign({ id: this.nick_name }, SECRET_KEY); //get the private key from the config file -> environment variable
     const expiresIn = 24 * 60 * 60;
-    console.log("\nGenerated Token For: " + JSON.stringify(user_info));
+    logger.debug("Token Generated For :" + user_info.email , { service: "User" });
     const accessToken = jwt.sign({ user_info }, authKeys.secret_codes.jwt_secret_key, {
       expiresIn: expiresIn
     });

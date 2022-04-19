@@ -1,7 +1,7 @@
-var User = require('../models/User');
 const { validationResult } = require('express-validator');
-const Sequelize = require("sequelize");
 var db = require('../database/connection')
+const infoMessages = require("../../config/info-messages");
+const logger = require("../../logger");
 
 exports.updateMoreInfo = async function(req,res){
     const errors = validationResult(req);
@@ -9,7 +9,7 @@ exports.updateMoreInfo = async function(req,res){
         var responseObject={
             returnType:"Error", //could be error or success.
             code:201,
-            message:"Please fill all the details. You can skip this as well",
+            message:infoMessages.ERROR_MORE_INFO_INVALID,
             realReturn:JSON.stringify(errors)
         }
         return res.status(201).send(responseObject);
@@ -31,33 +31,32 @@ exports.updateMoreInfo = async function(req,res){
                 }).then(users => {
                     res.send({
                         "code": 200,
-                        "message":"Welcome information updated successfully",
+                        "message":infoMessages.SUCCESS_MORE_INFO_UPDATED,
                         "verified":users.verified,
                         "first_time_user": users.first_time_user,
                         "authorization": db.users.generateAuthToken(users),
                         "realReturn":JSON.stringify(users)
                     });
-                }).catch((err)=>{
-                    console.log("Error in updating welcome details " + err);
+                }).catch((error)=>{
+                    logger.error(infoMessages.ERROR_GENERAL_CATCH + " : " + error , { service : "moreInfo-*c1" });
                 });
             }
             else{
                 var responseObject={
                     returnType:"Error", //could be error or success.
                     code:201,
-                    message:"Not able to find this user",
-                    realReturn:JSON.stringify(error)
+                    message:infoMessages.ERROR_USER_NOT_EXIST
                 }
                 res.status(201).send({responseObject })
             }
         }).catch(error => {
                 //todo:rollback if user won;t able to register.
-                console.log("\n There is a catch here " + JSON.stringify(error));
+                logger.error(infoMessages.ERROR_GENERAL_CATCH + " : " + error , { service : "moreInfo-*c2" });
                 //todo:Need to be managed from response send final middleware.
                 var responseObject={
                     returnType:"Error", //could be error or success.
                     code:501,
-                    message:"Catch from entering welcome information",
+                    message:infoMessages.ERROR_GENERAL_CATCH,
                     realReturn:JSON.stringify(error)
                 }
                 res.status(501).send({responseObject })
@@ -80,17 +79,16 @@ exports.getUserInformation = async function (req,res){
                 //already know about this, it wo'nt return profile_picture in any case, and it is not required as well.
                 profile_picture:(req.userEntitlements && req.userEntitlements.profilePictureVisibility == 1) ? "NOACCESS" : responseUserInfo["lastProfilePicId"]
             }
-            console.log("Sending user information :" + JSON.stringify(entitlementResponse));
             res.send({
                 "code": 200,
                 "userInformation": entitlementResponse,
-                "message": "User data retrieved"
+                "message": infoMessages.SUCCESS_USER_FOUND
             });
         }).catch(error => {
-            console.log("Error in gettin user details" + error);
+            logger.error(infoMessages.ERROR_GENERAL_CATCH + " : " + error , { service : "moreInfo-*c3" });
             res.send({
                 "code": 400,
-                "message": "Failed to get user data" + error
+                "message": infoMessages.ERROR_GENERAL_UNKNOWN_FAILURE
             });
         }); 
 }

@@ -1,14 +1,13 @@
 var firebaseRef = require('../database/firebase_db');
-var authKeys = require('../../config/auth');
 var db = require('../database/connection');
-
+const adminConf = require('../../config/adminConf');
+const infoMessages = require("../../config/info-messages");
+const logger = require("../../logger");
 
 //todo (p1): Implement this awesome format of replying back to users. awesome.:)
 //https://github.com/maitraysuthar/rest-api-nodejs-mongodb/blob/master/helpers/apiResponse.js
 
 //todo: Using an OAuth 2.0 refresh tokenc (https://firebase.google.com/docs/admin/setup)
-//move initialization of app in the app.js file later.
-var feedAppearanceTopic = 'feed_appearance';
 
 exports.addAppearanceBySocket = function (status, user_info, callback) {
     //todo: compact the user_info (which is inserted while creating JWA ) from object inside object to outer object with all details.
@@ -20,19 +19,19 @@ exports.addAppearanceBySocket = function (status, user_info, callback) {
         visible: true
     }).then(appearanceMade => {
         if (appearanceMade) {
-            //res.send(users);
             callback({
                 "code": 200,
-                "success": "user appearance made",
+                "success": infoMessages.SUCCESS_APPEARANCE_UPDATED,
                 "user": user_info.user_info.user_id,
                 "new_user": false
             });
             return;
         } else {
-            callback("Error in making an appearance");
+            logger.error(infoMessages.ERROR_APPEARANCE_UPDATE, { service : "upAppear" })
+            callback(infoMessages.ERROR_APPEARANCE_UPDATE);
         }
     }).catch(error => {
-        console.log("Error occured while creating" + error)
+        logger.error(infoMessages.ERROR_GENERAL_CATCH + " : " + error, { service : "upAppear-*c1" })
         callback(false);
         return;
     });
@@ -72,26 +71,26 @@ exports.addAppearance = async function (req, res) {
                         picture: appearanceMade.picture.toString(),
                         appearance_id: appearanceMade.appearance_id.toString()
                     },
-                    topic: feedAppearanceTopic
+                    topic: adminConf.FEED_APPEARANCE_TOPIC
                 };
                 // Send a message to devices subscribed to the provided topic.
                 firebaseRef.firebaseAdmin.messaging().send(appearanceToBlink)
                     .then((appearanceMade) => {
                         // Response is a message ID string.
-                        console.log('Successfully sent message:', appearanceMade);
-
+                        logger.info("Appearance Updated : " + appearanceMade.appearance_id.toString(), { service : "upAppear" })
+                        logger.debug("Appearance Updated : " + appearanceMade, { service : "upAppear" })
                     })
                     .catch((error) => {
-                        console.log('Error sending message:', error);
+                        logger.error(infoMessages.ERROR_GENERAL_CATCH + " : " + error, { service : "upAppear-*c1" })
                     })
                     .finally((done) => {
-                        console.log("it's done");
+                        logger.info("Appearance Updated Process Completed.", { service : "upAppear" })
                     });
             }
             res.data = { "message-sent": true };
             res.send({
                 "code": 200,
-                "message": "Appearance has been updated",
+                "message": infoMessages.SUCCESS_APPEARANCE_UPDATED,
                 "reference":500, 
                 /* reference code is used to tell UI , which portion to update on profile page appearance 
                 500: is for appearance
@@ -103,16 +102,17 @@ exports.addAppearance = async function (req, res) {
                 "updatedAt": appearanceMade.updatedAt,
             });
         } else {
+            logger.error(infoMessages.ERROR_APPEARANCE_UPDATE + " : Error in appearance entry", { service : "upAppear" })
             res.send({
                 "code": 204,
-                "success": "Error in appearance entry"
+                "success": infoMessages.ERROR_APPEARANCE_UPDATE
             });
         }
     }).catch(error => {
-        console.log("server failed " + error);
+        logger.error(infoMessages.ERROR_GENERAL_CATCH + " : " + error, { service : "upAppear-*c2" })
         res.send({
             "code": 400,
-            "failed": "server failed" + error
+            "failed": infoMessages.ERROR_GENERAL_CATCH
         });
     });
 }
@@ -132,7 +132,7 @@ exports.getLatestAppearance = async function (req, res) {
                 model: db.users
             }
         ], */
-        limit: 40, 
+        limit: adminConf.appearance_limit_home_page, 
         where: db.sequelize.and({visible: 1, public: 1}),
         order: [['createdAt', 'DESC']]
     }).then((results)=>{
@@ -145,12 +145,12 @@ exports.getLatestAppearance = async function (req, res) {
                 "appearance_id":response.appearance_id
             }
         });
-        //console.log("Returned data:" + JSON.stringify(results));
         res.send({code:200,data:results});
     }).catch(error => {
+        logger.error(infoMessages.ERROR_GENERAL_CATCH + " : " + error, { service : "upAppear-*c3" });
         res.send({
             "code": 400,
-            "message": "server failed" + error
+            "message": infoMessages.ERROR_GENERAL_CATCH
         });
     });
 };
@@ -181,12 +181,12 @@ exports.getUserLatestAppearance = async function (req, res) {
                     "appearance_id":response.appearance_id
                 }
             });
-            //console.log("Returned data:" + JSON.stringify(results));
             res.send({code:200,data:results});
         }).catch(error => {
+            logger.error(infoMessages.ERROR_GENERAL_CATCH + " : " + error, { service : "upAppear-*c4" })
             res.send({
                 "code": 400,
-                "message": "server failed" + error
+                "message": infoMessages.ERROR_GENERAL_CATCH
             });
         });
     } else {
@@ -194,7 +194,7 @@ exports.getUserLatestAppearance = async function (req, res) {
             res.send({
                 "code": 400,
                 "data":null,
-                "message": "profile is private"
+                "message": infoMessages.ERROR_NO_ACCESS
             });
     }
 };
@@ -272,21 +272,19 @@ exports.getAppearance = async function (req, res) {
                 "picture_average_rate":returnedAppearance.lm_rate[0]?returnedAppearance.lm_rate[0]:0, //todo: for whatever reasons we are not able to get the rate_avg value directly, so sending object directly.
                 "isCommentLimitOver":req.params.commentLimitLeft <=0 ? true : false
             }
-            /*picture_average_rate: it should be of one digit value currently its like 2.0000  */
-        console.log("\n Returned from scren ee " + JSON.stringify(returnedAppearance));    
+            /*picture_average_rate: it should be of one digit value currently its like 2.0000  */ 
         res.send(returnedAppearance);
     }).catch(error => {
-        console.log("Error in get the condition: " + JSON.stringify(error));
+        logger.error(infoMessages.ERROR_GENERAL_CATCH + " : " + error, { service : "upAppear-*c5" });
         res.send({
             "code": 400,
-            "message": "server failed" + error
+            "message": infoMessages.ERROR_GENERAL_CATCH
         });
     });
 };
 
 exports.confirmIfAppearanceBelongsToTheUser =  function(appearance_id,requestedUser){
     //todo: we can get this to the middleware.
-    console.log("\n Requested User and iamge " + requestedUser + "--" + appearance_id);
     return db.appearances.findOne({ 
         attributes:['appearance_id','picture','location','createdAt','caption','anonymity','user_id'],
         where: db.sequelize.and({appearance_id: appearance_id, user_id:requestedUser})
@@ -296,7 +294,7 @@ exports.confirmIfAppearanceBelongsToTheUser =  function(appearance_id,requestedU
         else
             return false;
     }).catch((error)=>{
-        console.log("Error in finding image of this user" + error);
+        logger.error(infoMessages.ERROR_GENERAL_CATCH + "[ Error in finding image ] : " + error, { service : "upAppear-*c5" });
         return false;
     })
 }
@@ -336,9 +334,10 @@ exports.addAppearanceByCloud = async function (req, res) {
         });
     }
     catch(error) {
+        logger.error(infoMessages.ERROR_GENERAL_CATCH + "[ addAppearanceByCloud ] : " + error, { service : "upAppear-*c6" });
         res.send({
             "code": 400,
-            "failure": "failed:" + error
+            "failure": infoMessages.ERROR_GENERAL_CATCH
         });
     }
 

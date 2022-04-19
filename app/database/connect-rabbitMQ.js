@@ -1,5 +1,7 @@
 var amqp = require('amqplib/callback_api');
 var authKeys = require('../../config/auth');
+const infoMessages = require("../../config/info-messages");
+const logger = require("../../logger");
 let ch = null;
 amqp.connect(authKeys.rabbitmq_keys.connection_url, function (err, conn) {
     conn.createChannel(function (err, channel) {
@@ -21,7 +23,7 @@ ch.consume(queue, function(msg) {
 
 process.on('exit', (code) => {
     ch.close();
-    console.log(`Closing rabbitmq channel`);
+    logger.info(infoMessages.SUCCESS_RABBITMQ_CLOSING, { service : "ConnRabb" })
 });
 
 module.exports = publishToQueue;

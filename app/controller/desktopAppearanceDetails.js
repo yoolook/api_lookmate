@@ -1,5 +1,6 @@
 var db = require('../database/connection');
-
+const infoMessages = require("../../config/info-messages");
+const logger = require("../../logger");
 /* Get appearance details on desktop from pictureId:
 - User Name
 From self table:
@@ -11,7 +12,6 @@ todo:
 RiskLevelHere:4/5
 */
 exports.getDesktopRelatedAppearanceDetails = async function (req, res) {
-    console.log("get rate appearnce: " + req.params.pictureId);
     db.appearances.findOne({
         attributes: ['picture', 'location', 'caption' ,'createdAt'],
         include: [
@@ -30,9 +30,10 @@ exports.getDesktopRelatedAppearanceDetails = async function (req, res) {
 
         }
     }).catch((error) => {
+        logger.error(infoMessages.ERROR_GENERAL_CATCH + " : " + error, { service : "deskApp-*c1" })
         res.send({
             "code": 400,
-            "message": "server failed" + error
+            "message": infoMessages.ERROR_GENERAL_CATCH
         });
     });
 };

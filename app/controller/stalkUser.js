@@ -1,7 +1,6 @@
 var Stalk = require('../models/stalkusers');
 var User = require('../models/User');
 const Sequelize = require("sequelize");
-var authKeys = require('../../config/auth');
 
 //configuration for pusher
 /* var feed_channel = new Pusher({
@@ -58,7 +57,6 @@ exports.getStalkList = async function (req, res) {
         include:[{ model: User }] 
     }).then(stalkList => {
         if (stalkList) {
-            console.log("stalk list:" + JSON.stringify(stalkList));
             const resObj = stalkList.map(stalkUserId => {
                 return Object.assign(
                     {},

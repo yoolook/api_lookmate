@@ -1,4 +1,6 @@
-var db = require('../database/connection');
+const infoMessages = require("../../config/info-messages");
+var db = require("../database/connection");
+const logger = require("../../logger");
 //const publishToQueue = require('../database/connect-rabbitMQ');
 
 //configuration for pusher
@@ -9,7 +11,6 @@ var db = require('../database/connection');
     cluster: authKeys.pusher_keys.cluster,
     encrypted: true
   }); */
-
 
 /* @description; This add appearance in the database using API whereas above add it using socket, we need:
 1. picture(s) URL: in the form of array.
@@ -27,29 +28,40 @@ Location:
 */
 //description: we are just soft deleting the appearance, so that it won't be visible on screen.
 exports.deleteAppearance = async function (req, res) {
-   /*  db.appearances.findOne({
+  /*  db.appearances.findOne({
         where: Sequelize.and({userid: req.userDataFromToken.user_info.user_id,},{appearance_id:req.params.appearanceId})        
     }) */
 
-    db.sequelize.query('CALL delete_appearance (:appearance_id)', 
-        {replacements: { appearance_id: req.params.appearanceId}})
-    .then(returnedProcResponse => {
-        if (returnedProcResponse) {
-                res.send({
-                    "code": 200,
-                    "message": "user appearance deleted",
-                    "appearance_id":returnedProcResponse[0]["@appearance_id"] || req.params.appearanceId 
-                });
-        } else {
-            res.send({
-                "code": 204,
-                "message": "No such appearance or user exists"
-            });
-        }
-    }).catch(error => {
+  db.sequelize
+    .query("CALL delete_appearance (:appearance_id)", {
+      replacements: { appearance_id: req.params.appearanceId },
+    })
+    .then((returnedProcResponse) => {
+      if (returnedProcResponse) {
         res.send({
-            "code": 400,
-            "message": "server failed" + error
+          code: 200,
+          message: infoMessages.SUCCESS_APPEARANCE_DELETED,
+          appearance_id:
+            returnedProcResponse[0]["@appearance_id"] ||
+            req.params.appearanceId,
         });
+      } else {
+        logger.error(infoMessages.ERROR_APPEARANCE_NOT_FOUND + " : " + error, {
+          service: "delApp",
+        });
+        res.send({
+          code: 204,
+          message: infoMessages.ERROR_APPEARANCE_NOT_FOUND,
+        });
+      }
+    })
+    .catch((error) => {
+      logger.error(infoMessages.ERROR_GENERAL_CATCH + " : " + error, {
+        service: "delApp-*c1",
+      });
+      res.send({
+        code: 400,
+        message: infoMessages.ERROR_GENERAL_CATCH,
+      });
     });
-}
+};

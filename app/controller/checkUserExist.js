@@ -1,27 +1,30 @@
 var db = require('../database/connection');
+const infoMessages = require("../../config/info-messages");
+const logger = require("../../logger");
+
 exports.checkEmailorMobileExists = async function(req,res,next){
     await db.users.findOne({
         attributes: ['user_id','verified'],
         where: db.sequelize.or({ email:req.body.email, phone:req.body.phone })
     }).then(result => {
-        console.log("\n--user has been checked for existance---" + JSON.stringify(result));
         if(result){
             res.send({
                 "code": 201,
-                "message": "Sorry, username is not available"
+                "message": infoMessages.ERROR_USERNAME_UNAVAILABLE
             });
         }
         else{
             res.send({
                 "code": 200,
-                "message": "Yupp!! username is available"
+                "message": infoMessages.SUCCESS_AVAILABLE_USERNAME
             });
         }
     }).catch (
         error => {
+            logger.error(infoMessages.ERROR_GENERAL_UNKNOWN_FAILURE, { service : "ChUserXt-*c" })
             res.send({
                 "code": 402,
-                "message": "unknown error occured"
+                "message": infoMessages.ERROR_GENERAL_UNKNOWN_FAILURE
             });
         }
     )
