@@ -1,5 +1,5 @@
 const jwt = require("jsonwebtoken");
-var authKeys = require('../../config/auth');
+var authKeys = require('../../auth-secrets');
 const logger = require("../../logger");
 const infoMessages = require("../../config/info-messages");
 /* Token Policies

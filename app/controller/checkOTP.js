@@ -4,7 +4,7 @@
 
 const { validationResult } = require("express-validator");
 const otplib = require("otplib");
-var authKeys = require("../../config/auth");
+var authKeys = require("../../auth-secrets");
 var db = require("../database/connection");
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");

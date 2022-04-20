@@ -1,6 +1,6 @@
 //const Joi = require('joi');
 //const jwt = require('jsonwebtoken');
-//var authKeys = require('../../config/auth');
+//var authKeys = require('../../auth-secrets');
 
 var db = require('../database/connection');
 const User = require("../models/User");

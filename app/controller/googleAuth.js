@@ -1,5 +1,5 @@
 var db = require('../database/connection');
-var authKeys = require('../../config/auth');
+var authKeys = require('../../auth-secrets');
 var lookmateRegisterRoute = require('../controller/lookmateRegisterController');
 const { OAuth2Client } = require('google-auth-library');
 const infoMessages = require('../../config/info-messages');

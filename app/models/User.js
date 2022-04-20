@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 const jwt = require('jsonwebtoken');
-var authKeys = require('../../config/auth');
+var authKeys = require('../../auth-secrets');
 const logger = require("../../logger");
 //var db = require('./db')
 //const Appearance = require('../models/Appearance')

@@ -1,5 +1,5 @@
 var amqp = require('amqplib/callback_api');
-var authKeys = require('../../config/auth');
+var authKeys = require('../../auth-secrets');
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
 let ch = null;

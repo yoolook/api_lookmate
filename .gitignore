@@ -66,3 +66,5 @@ ProfileImages/
 Thumbnails/
 Images/
 
+# Full File
+auth-secrets.js

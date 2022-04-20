@@ -1,6 +1,6 @@
 const bcrypt = require('bcryptjs');
 const otplib = require('otplib');
-var authKeys = require('../../config/auth');
+var authKeys = require('../../auth-secrets');
 const { validationResult } = require('express-validator');
 var settingsOperation = require('../controller/settingController');
 var db = require('../database/connection');
