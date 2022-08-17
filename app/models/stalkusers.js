@@ -1,6 +1,5 @@
 //const Sequelize = require("sequelize");
 const User = require("./User");
-
 module.exports = (sequelize, DataTypes) => {
   const Stalk = sequelize.define("stalk", {
     stalk_id: {

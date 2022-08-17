@@ -1,6 +1,6 @@
 const infoMessages = require("../../config/info-messages");
-var db = require("../database/connection");
 const logger = require("../../logger");
+var db = require("../../Initialize/init-database");
 //const publishToQueue = require('../database/connect-rabbitMQ');
 
 //configuration for pusher

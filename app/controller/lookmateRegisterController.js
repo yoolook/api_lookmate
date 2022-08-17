@@ -1,14 +1,14 @@
 const bcrypt = require('bcryptjs');
 const otplib = require('otplib');
-var authKeys = require('../../auth-secrets');
 const { validationResult } = require('express-validator');
 var settingsOperation = require('../controller/settingController');
-var db = require('../database/connection');
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
+var db = require("../../Initialize/init-database");
 //todo:move this to config.
 var newUserTempRegisterationId = require('uniqid');
-
+const authSecret = require("../../Initialize/init-cache");
+const otpKey = authSecret.get('authKeys').secret_codes.otp_secret_key;
 //new register policies:
 //1. Nick name would be user until someone sets it from welcome page or setting.
 //todo:need to make trigger which should make entry in setting table.
@@ -30,7 +30,7 @@ exports.register = function (req, res) {
     db.users.create({
         email: req.body.email,
         password: bcrypt.hashSync(req.body.password),
-        otp: otplib.authenticator.generate(authKeys.secret_codes.otp_secret_key),
+        otp: otplib.authenticator.generate(otpKey),
         verified: false,
         registration_id: newUserTempRegisterationId(req.body.email),
         phone: req.body.phone,

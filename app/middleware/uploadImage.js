@@ -3,11 +3,11 @@
 2. Storing images from profile picrture uploads. (case 2) */
 
 var multer = require("multer");
-var adminConfig = require("../../config/adminConf");
 var Jimp = require("jimp");
 var uniqid = require("uniqid");
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
+var adminConfig = require("../../config/adminConf");
 
 //Storage variable used for seed storage destination and name of the file.
 var storage = multer.diskStorage({

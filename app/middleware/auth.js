@@ -1,7 +1,9 @@
 const jwt = require("jsonwebtoken");
-var authKeys = require('../../auth-secrets');
 const logger = require("../../logger");
 const infoMessages = require("../../config/info-messages");
+const authSecret = require("../../Initialize/init-cache");
+const authKeys = authSecret.get('authKeys');
+
 /* Token Policies
 1. Token should be attached in the form of ["x-access-token"] in header of all the requests. 
 2. All User information can be attained throuigh "userDataFromToken" for later user.

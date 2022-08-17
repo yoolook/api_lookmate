@@ -1,11 +1,13 @@
-var db = require('../database/connection');
-var authKeys = require('../../auth-secrets');
+
+var authKeys = require('../../config/auth-bind-config');
 var lookmateRegisterRoute = require('../controller/lookmateRegisterController');
-const { OAuth2Client } = require('google-auth-library');
+var db = require("../../Initialize/init-database");
+var client = require("../../Initialize/init-google-auth");
+const authSecret = require("../../Initialize/init-cache");
+var googleClientId = authSecret.get('authKeys').googleAuth.clientID;
 const infoMessages = require('../../config/info-messages');
 /* dnd:used when auth is from backend, but now its from UI so running next line function */
-//const client = new OAuth2Client(authKeys.googleAuth.clientID);
-const client = new OAuth2Client({ clientId: authKeys.googleAuth.clientID, redirectUri: authKeys.googleAuth.callbackURL });
+
 
 exports.verify = function (req, res) {
     //verify function verifies the user from google server.
@@ -59,7 +61,7 @@ exports.verify = function (req, res) {
 async function verify(req, res) {
     const ticket = await client.verifyIdToken({
         idToken: req.headers.authorization, //always recieved in small case on node. :(
-        audience: authKeys.googleAuth.clientID  // Specify the CLIENT_ID of the app that accesses the backend
+        audience: googleClientId  // Specify the CLIENT_ID of the app that accesses the backend
         // Or, if multiple clients access the backend:
         //[CLIENT_ID_1, CLIENT_ID_2, CLIENT_ID_3]
     });

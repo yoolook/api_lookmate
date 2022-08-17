@@ -1,8 +1,9 @@
+//input source [authKeys]
 var amqp = require('amqplib/callback_api');
-var authKeys = require('../../config/auth-bind-config');
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
 let ch = null;
+
 amqp.connect(authKeys.rabbitmq_keys.connection_url, function (err, conn) {
     conn.createChannel(function (err, channel) {
         ch = channel;

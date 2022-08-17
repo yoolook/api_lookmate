@@ -1,10 +1,8 @@
-var db = require('../database/connection');
 const { validationResult } = require('express-validator');
 const fs = require('fs');
-var adminConfig = require('../../config/adminConf');
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
-
+var db = require("../../Initialize/init-database");
 // Alternatively: const secret = otplib.authenticator.generateSecret();
 exports.updateProfilePicCode = async function (req, res) {
     const errors = validationResult(req);

@@ -1,6 +1,6 @@
 
 var fs = require('fs');
-var adminConfig = require('./config/adminConf');
+var adminConfig = require('../config/adminConf');
 function intializeLookmateDirectories() {
   if (!fs.existsSync(adminConfig.appearance_location)) {
     fs.mkdirSync(adminConfig.appearance_location);

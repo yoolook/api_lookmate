@@ -1,4 +1,4 @@
-var db = require('../database/connection');
+var db = require('../../Initialize/init-database');
 const User = require("../models/User");
 /* 
 tocopy:

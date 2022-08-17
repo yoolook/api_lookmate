@@ -1,7 +1,7 @@
 const { validationResult } = require('express-validator');
-var db = require('../database/connection')
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
+var db = require("../../Initialize/init-database");
 
 exports.updateMoreInfo = async function(req,res){
     const errors = validationResult(req);

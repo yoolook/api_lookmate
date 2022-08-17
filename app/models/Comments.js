@@ -1,8 +1,4 @@
-//const Joi = require('joi');
-//const jwt = require('jsonwebtoken');
-//var authKeys = require('../../auth-secrets');
-
-var db = require('../database/connection');
+var db = require('../../Initialize/init-database');
 const User = require("../models/User");
 const Appearance = require('../models/Appearance')
 

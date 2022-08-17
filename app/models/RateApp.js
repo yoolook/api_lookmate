@@ -1,5 +1,4 @@
-var db = require('../database/connection');
-
+var db = require('../../Initialize/init-database');
 module.exports = (sequelize, DataTypes) => {
     const Rate = sequelize.define("rates", {
         rate_id: {

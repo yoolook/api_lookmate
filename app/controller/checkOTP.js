@@ -4,10 +4,11 @@
 
 const { validationResult } = require("express-validator");
 const otplib = require("otplib");
-var authKeys = require("../../auth-secrets");
-var db = require("../database/connection");
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
+var db = require("../../Initialize/init-database");
+const authSecret = require("../../Initialize/init-cache");
+var otpKey = authSecret.get('authKeys').secret_codes.otp_secret_key;
 
 // Alternatively: const secret = otplib.authenticator.generateSecret();
 exports.verifyOTP = async function (req, res) {
@@ -93,7 +94,7 @@ exports.generateOTP = async function (req, res) {
         user
           .update({
             otp: otplib.authenticator.generate(
-              authKeys.secret_codes.otp_secret_key
+              otpKey
             ),
           })
           .then((result) => {

@@ -1,19 +1,18 @@
 'use strict'
+//input source [dbConfig, adminConfig]
+var adminConfig = require("../config/adminConf");
+const dbConfigSecret = require("./init-cache");
+const dbConfig = dbConfigSecret.get('dbConfig');
+console.log("DB Config", dbConfig);
 const Sequelize = require("sequelize");
-var adminConfig = require('../../config/adminConf');
-const dbConfig = require("../../config/db-bind-config");
-var db = require("../../Initialize/init-database");
-
-const sequelize = new Sequelize(dbConfig.DB, dbConfig.USER, dbConfig.PASSWORD, {
-  host: dbConfig.HOST,
+const sequelize = new Sequelize(dbConfig.DB_NAME, dbConfig.DB_USER, dbConfig.DB_PASSWORD, {
+  host: dbConfig.DB_HOST,
   dialect: adminConfig.db_dialect,
   port: adminConfig.db_port,
   operatorsAliases: false,
   logging: false,
   pool: adminConfig.db_pool
 })
-
-console.log("database working");
 // Connect all the models/tables in the database to a db object, 
 //so everything is accessible via one object
 const db = {};
@@ -21,13 +20,13 @@ db.Sequelize = Sequelize;
 db.sequelize = sequelize;
 
 //Models/tables
-db.users = require('../models/User')(sequelize, Sequelize);
-db.comments = require('../models/Comments')(sequelize, Sequelize);  
-db.appearances = require('../models/Appearance')(sequelize, Sequelize);
-db.rate = require('../models/RateApp')(sequelize, Sequelize);
-db.settings = require('../models/Settings')(sequelize, Sequelize);
-db.stalk = require('../models/stalkusers')(sequelize, Sequelize);
-db.notifications = require('../models/Notification')(sequelize,Sequelize);
+db.users = require('../app/models/User')(sequelize, Sequelize);
+db.comments = require('../app/models/Comments')(sequelize, Sequelize);  
+db.appearances = require('../app/models/Appearance')(sequelize, Sequelize);
+db.rate = require('../app/models/RateApp')(sequelize, Sequelize);
+db.settings = require('../app/models/Settings')(sequelize, Sequelize);
+db.stalk = require('../app/models/stalkusers')(sequelize, Sequelize);
+db.notifications = require('../app/models/Notification')(sequelize,Sequelize);
 
 //Relations
 //for user
@@ -61,5 +60,4 @@ db.users.hasMany(db.notifications, { as: "lm_notification_user",foreignKey: 'use
 db.notifications.belongsTo(db.appearances, { foreignKey: 'appearance_id',targetKey: 'appearance_id' }); 
 //db.appearances.hasMany(db.notifications, { as: "lm_notification_user",foreignKey: 'user_id' , targetKey: 'user_id'});
 
-module.exports = db;  
-
+module.exports = db; 

@@ -1,11 +1,11 @@
-var db = require("../database/connection");
+
 var appearance = require("./addAppearance");
 var notificationController = require("./notification");
-const firebaseRef = require("../database/firebase_db");
 var messageHelper = require("../helper/notificationMessages");
-var adminConfig = require("../../config/adminConf");
 const infoMessages = require("../../config/info-messages");
+var db = require("../../Initialize/init-database");
 const logger = require("../../logger");
+var firebaseRef = require("../../Initialize/init-firebase");
 
 /* @description; This add appearance in the database using API whereas above add it using socket, we need:
 1. picture(s) URL: in the form of array.

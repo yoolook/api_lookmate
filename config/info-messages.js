@@ -49,5 +49,6 @@ module.exports = {
   SUCCESS_FIREBASE_INIT:"Initiated firebase.",
   SUCCESS_FIREBASE_ADD_USER:"Added User in Firebase.",
   SUCCESS_RABBITMQ_CLOSING:"Closing Rabbit MQ",
+  SUCCESS_SECRET_FETCHED:"Fetched Configuration Secrets.",
   SUCCESS_EMPTY_RESPONSE:"",
 }

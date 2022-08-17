@@ -1,7 +1,7 @@
 const bcrypt = require('bcryptjs');
-var db = require('../database/connection');
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
+var db = require("../../Initialize/init-database");
 exports.updatePassword = async function(req,res){
     //todo:check for null entries in nick_name as it has changed to null entry.
     await db.users.findOne({

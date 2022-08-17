@@ -1,7 +1,7 @@
-var db = require("../database/connection");
 const { validationResult } = require("express-validator");
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
+var db = require("../../Initialize/init-database");
 /* notification object should have
 {
     notification: {

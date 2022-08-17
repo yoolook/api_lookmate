@@ -1,8 +1,8 @@
-var db = require('../database/connection')
 const bcrypt = require('bcryptjs');
 const Sequelize = require("sequelize");
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
+var db = require("../../Initialize/init-database");
 //todo:use token based searching of user instead of the email of phone number.
 exports.login = async function (req, res) {
     //todo:check for null entries in nick_name as it has changed to null entry.
@@ -49,7 +49,7 @@ exports.login = async function (req, res) {
         }
     }).catch((error) => {
         //todo:Need to be managed from response send final middleware.
-        logger.error(infoMessages.ERROR_UNKNOWN_LOGIN, { service: "Login-*c" });
+        logger.error(infoMessages.ERROR_UNKNOWN_LOGIN, { service: "Login-*c" + error });
         var responseObject = {
             returnType: "Error", //could be error or success.
             code: 402,
@@ -118,7 +118,7 @@ exports.submitRegistrationId = async function (req, res) {
                                     "authorization": db.users.generateAuthToken(result) */
                     });
                 }).catch(function (error) {
-                    logger.debug(infoMessages.ERROR_FIREBASE, { service: "Login-*c" });
+                    logger.debug(infoMessages.ERROR_FIREBASE, { service: "Login-*c" + error });
                     var responseObject = {
                         returnType: "Error", //user does'nt exist.
                         code: 205,

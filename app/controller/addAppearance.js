@@ -1,9 +1,9 @@
-var firebaseRef = require('../database/firebase_db');
-var db = require('../database/connection');
-const adminConf = require('../../config/adminConf');
+
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
-
+var db = require("../../Initialize/init-database");
+var adminConf = require('../../config/adminConf');
+var firebaseRef = require("../../Initialize/init-firebase");
 //todo (p1): Implement this awesome format of replying back to users. awesome.:)
 //https://github.com/maitraysuthar/rest-api-nodejs-mongodb/blob/master/helpers/apiResponse.js
 

@@ -22,7 +22,7 @@ module.exports = function (app) {
     var appearanceInfoDesktop = require('../controller/desktopAppearanceDetails');
     var deleteAppearanceController = require('../controller/deleteAppearance');
     var customValidation = require('../middleware/custom-validators');
-
+    
     //Silient login here.
     app.route('/slogin').get(verifyAuthToken, lookmateLoginUserRoute.slogin);
     //loomkmate login route

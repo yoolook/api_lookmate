@@ -1,6 +1,6 @@
-var db = require("../database/connection");
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
+var db = require("../../Initialize/init-database");
 
 exports.createUserSetting = async function (user_id) {
   await db.settings

@@ -1,10 +1,9 @@
 var validator = require('validator');
-var db = require('../database/connection');
 var requestParamFormatter = require('../helper/requestParamFormatter');
-var adminConfig = require('../../config/adminConf');
 var requestIp = require('request-ip');
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
+var db = require("../../Initialize/init-database");
 /**
  * Check if provided value is mobile or email. if not from both, return 400 back to the user.
  * !partial implementation: these values are used in register controller.
@@ -42,7 +41,12 @@ checkMobileOrEmail = function (req, res, next) {
 
 /* todo:going forward take only a single setting, rather then providing the complete set */
 checkUserAndGetEntitlements = function (req, res, next) {
-    if (req.params.user_id != null) {
+    if (req.params.user_id == "null") {
+        // if somehow you need to pass this code, make sure next controller should only be used to fetch logined user information, it is safe then...as it is used here. 
+        req.userEntitlements = null
+        next();
+    }
+    else{
         db.settings.findOne({
             attributes: ['user_id', 'profileVisibleTo', 'profilePictureVisibility', 'strictlyAnonymous', 'maxCommentCountPerPerson', 'notificationScreen'],
             where: { user_id: req.params.user_id }
@@ -57,10 +61,6 @@ checkUserAndGetEntitlements = function (req, res, next) {
                 "message": infoMessages.ERROR_GENERAL_UNKNOWN_FAILURE
             });
         });
-    } else {
-        // if somehow you need to pass this code, make sure next controller should only be used to fetch logined user information, it is safe then...as it is used here. 
-        req.userEntitlements = null
-        next();
     }
 };
 
