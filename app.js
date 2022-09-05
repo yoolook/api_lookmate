@@ -9,7 +9,6 @@ const storeSecret = require("./Initialize/init-cache");
 require("./Initialize/initialize-server-dir");
 logger.info("Initialized server directories..", { service: "base" });
 initSecrets.then((x) => {
-  console.log("initialized..");
   //creating directory if not present.
   port = env.PORT || adminConfig.initial_server_run_port;
   var app = express();
@@ -49,4 +48,16 @@ initSecrets.then((x) => {
 /*   routes(app,db,client,firebaseRef,otpKey,googleClientId,adminConfig); */
   routes(app);
   logger.info("Server Initiated on port " + port, { service: "base" });
+}).catch((secretIntError) => {
+  logger.error("Secret Initialization Error.." + secretIntError, { service: "IntSec" });
+  //creating dummy server to keep docker container running and debug the network tunnels/ connections between the containers.
+  const http = require('http');
+  const port = env.PORT || adminConfig.initial_server_run_port;
+  const requestListener = function (req, res) {
+    res.writeHead(200);
+    res.end('Debug Server Response');
+  }
+  const server = http.createServer(requestListener);
+  server.listen(port);
+  console.log("\n---Server created on " + port + " to debug docker network/connection on same port.---\n*Note: It's not a real expected lookmate server. It should be reverted, once actual server starts.");
 });

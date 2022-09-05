@@ -19,10 +19,6 @@ module.exports = {
     'appearance_limit_home_page': 45,
     'intial_server_run_IP':"0.0.0.0",
     'initial_server_run_port':3000,
-
-    'vault_secrets_version':"v1",
-    'vault_secrets_service':"http://127.0.0.1:8200",
-    
     'db_port': 3306,
     'db_dialect': "mysql",
     'db_pool': {
@@ -31,9 +27,6 @@ module.exports = {
         acquire: 30000,
         idle: 10000,
     },
-
     'firebase_db_ref':'lookmate',
-
     'FEED_APPEARANCE_TOPIC':'feed_appearance'
-
 }

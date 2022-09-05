@@ -3,7 +3,6 @@
 var adminConfig = require("../config/adminConf");
 const dbConfigSecret = require("./init-cache");
 const dbConfig = dbConfigSecret.get('dbConfig');
-console.log("DB Config", dbConfig);
 const Sequelize = require("sequelize");
 const sequelize = new Sequelize(dbConfig.DB_NAME, dbConfig.DB_USER, dbConfig.DB_PASSWORD, {
   host: dbConfig.DB_HOST,

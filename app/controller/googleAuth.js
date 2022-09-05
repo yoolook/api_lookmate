@@ -1,5 +1,3 @@
-
-var authKeys = require('../../config/auth-bind-config');
 var lookmateRegisterRoute = require('../controller/lookmateRegisterController');
 var db = require("../../Initialize/init-database");
 var client = require("../../Initialize/init-google-auth");
