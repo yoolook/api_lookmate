@@ -87,7 +87,7 @@ async function generateThumbnails(
 
 exports.uploadImageToServer = async function (req, res, next) {
   upload(req, res, async function (err) {
-    if (error) {
+    if (err) {
       logger.error(infoMessages.ERROR_GENERAL_CATCH + " : " + error, {
         service: "upImage-*c1",
       });

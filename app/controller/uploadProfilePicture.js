@@ -3,6 +3,7 @@ const fs = require('fs');
 const infoMessages = require("../../config/info-messages");
 const logger = require("../../logger");
 var db = require("../../Initialize/init-database");
+var adminConfig = require("../../config/adminConf");
 // Alternatively: const secret = otplib.authenticator.generateSecret();
 exports.updateProfilePicCode = async function (req, res) {
     const errors = validationResult(req);

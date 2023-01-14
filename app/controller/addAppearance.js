@@ -74,7 +74,7 @@ exports.addAppearance = async function (req, res) {
                     topic: adminConf.FEED_APPEARANCE_TOPIC
                 };
                 // Send a message to devices subscribed to the provided topic.
-                firebaseRef.firebaseAdmin.messaging().send(appearanceToBlink)
+                firebaseRef.messaging().send(appearanceToBlink)
                     .then((appearanceMade) => {
                         // Response is a message ID string.
                         logger.info("Appearance Updated : " + appearanceMade.appearance_id.toString(), { service : "upAppear" })

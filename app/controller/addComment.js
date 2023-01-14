@@ -3,6 +3,7 @@ var appearance = require("./addAppearance");
 var notificationController = require("./notification");
 var messageHelper = require("../helper/notificationMessages");
 const infoMessages = require("../../config/info-messages");
+var adminConfig = require("../../config/adminConf");
 var db = require("../../Initialize/init-database");
 const logger = require("../../logger");
 var firebaseRef = require("../../Initialize/init-firebase");
@@ -99,8 +100,7 @@ addCommentToDb = async function (req, res) {
             }
           );
           //Sending to the firebase push notifacation FCM.
-          firebaseRef.firebaseAdmin
-            .messaging()
+          firebaseRef.messaging()
             .sendToDevice(req.params.registeration_id, message)
             .then((response) => {
               // Response is a message ID string.

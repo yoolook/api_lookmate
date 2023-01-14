@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "NODE_ENV=development nodemon app.js",
     "test": "jest",
-    "test:watch": "jest --watch"
+    "test:watch": "jest --watch",
+    "debug": "nodemon --inspect app.js"
   },
   "repository": {
     "type": "git",

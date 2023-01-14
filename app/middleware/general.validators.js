@@ -140,7 +140,7 @@ checkIfAppearanceExists = function (req, res, next) {
         /* image does not belong to this user */
         res.send({
             "code": 400,
-            "message": infoMessages.ERROR_GENERAL_UNKNOWN_FAILURE
+            "message": infoMessages.ERROR_GENERAL_UNKNOWN_FAILURE 
         });
     });
 }
