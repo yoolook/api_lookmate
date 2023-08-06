@@ -15,7 +15,6 @@ exports.updateMoreInfo = async function(req,res){
         return res.status(201).send(responseObject);
     }
     const unitConversionYearsArr = [1985, 1990, 1995, 2000, 2005];
-
     await db.users.findOne({
         where: {user_id: req.userDataFromToken.user_info.user_id}
     }).then(
@@ -25,7 +24,7 @@ exports.updateMoreInfo = async function(req,res){
                 user.update({
                     nick_name:req.body.nickName,
                     birth_year_range:unitConversionYearsArr[req.body.birthYear],
-                    gender:req.body.gender,
+                    gender:req.body.gender.charAt(0).toUpperCase(),
                     bio:req.body.bio,
                     first_time_user:false
                 }).then(users => {
